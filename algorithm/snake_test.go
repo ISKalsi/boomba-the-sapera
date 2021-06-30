@@ -1,4 +1,4 @@
-package main
+package algorithm
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -7,8 +7,8 @@ import (
 )
 
 func TestNextMove(t *testing.T) {
-	tests := []struct{
-		lastMove int
+	tests := []struct {
+		lastMove           int
 		restrictedNextMove int
 	}{
 		{0, 2},
@@ -22,8 +22,8 @@ func TestNextMove(t *testing.T) {
 		name := "Restricted move for " + strings.ToUpper(moveString)
 
 		t.Run(name, func(t *testing.T) {
-			g := Game{lastMove: test.lastMove}
-			nextMove := g.nextMoveIndex()
+			g := Snake{lastMove: test.lastMove}
+			nextMove := g.NextMove()
 			assert.NotEqual(t, test.restrictedNextMove, nextMove)
 		})
 	}
@@ -32,7 +32,7 @@ func TestNextMove(t *testing.T) {
 func TestParseMoveIndexToString(t *testing.T) {
 	tests := []struct {
 		expectedString string
-		moveIndex int
+		moveIndex      int
 	}{
 		{"up", 0},
 		{"right", 1},
@@ -53,5 +53,3 @@ func TestPanicFromParseMoveIndexToString(t *testing.T) {
 		_ = parseMoveIndexToString(4)
 	})
 }
-
-

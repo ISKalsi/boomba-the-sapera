@@ -1,18 +1,21 @@
 package main
 
 import (
+	"github.com/ISKalsi/boomba-the-sapera/algorithm"
+	"github.com/ISKalsi/boomba-the-sapera/mux"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 )
 
-func SetupRoutes(g *Game) *gin.Engine {
+func SetupRoutes(n *algorithm.NextMoveGetter) *gin.Engine {
 	r := gin.Default()
+	m := mux.New(n)
 
-	r.GET("/", HandleIndex)
-	r.POST("/start", HandleStart)
-	r.POST("/move", g.HandleMove)
-	r.POST("/end", HandleEnd)
+	r.GET("/", m.HandleIndex)
+	r.POST("/start", m.HandleStart)
+	r.POST("/move", m.HandleMove)
+	r.POST("/end", m.HandleEnd)
 
 	return r
 }
@@ -26,10 +29,12 @@ func getPort() string {
 }
 
 func main() {
-	g := Game{lastMove: 0}
+	var s algorithm.NextMoveGetter = algorithm.Snake{}
 
-	router := SetupRoutes(&g)
+	router := SetupRoutes(&s)
 	port := getPort()
+
+	gin.New()
 
 	if e := router.Run(":" + port); e != nil {
 		log.Fatal(e)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	. "github.com/ISKalsi/boomba-the-sapera/algorithm"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http/httptest"
@@ -22,7 +23,7 @@ func TestSetupRoutes(t *testing.T) {
 		{"/end", "POST"},
 	}
 
-	game := Game{}
+	var game NextMoveGetter = Snake{}
 	router := SetupRoutes(&game)
 
 	for _, test := range tests {
