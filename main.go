@@ -1,16 +1,15 @@
 package main
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/algorithm"
 	"github.com/ISKalsi/boomba-the-sapera/mux"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 )
 
-func SetupRoutes(n *algorithm.NextMoveGetter) *gin.Engine {
+func SetupRoutes() *gin.Engine {
 	r := gin.Default()
-	m := mux.New(n)
+	m := mux.New()
 
 	r.GET("/", m.HandleIndex)
 	r.POST("/start", m.HandleStart)
@@ -28,13 +27,30 @@ func getPort() string {
 	return port
 }
 
-func main() {
-	var s algorithm.NextMoveGetter = algorithm.Snake{}
+func logToFile() (func(*os.File), *os.File) {
+	f, err := os.OpenFile("logs/json.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	deferFunc := func(f *os.File) {
+		e := f.Close()
+		if e != nil {
+			log.Fatalf("error closing file: %v", e)
+		}
+	}
 
-	router := SetupRoutes(&s)
+	log.SetOutput(f)
+	return deferFunc, f
+}
+
+func main() {
+	router := SetupRoutes()
 	port := getPort()
 
 	gin.New()
+
+	fn, file := logToFile()
+	defer fn(file)
 
 	if e := router.Run(":" + port); e != nil {
 		log.Fatal(e)

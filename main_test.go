@@ -1,43 +1,13 @@
 package main
 
 import (
-	. "github.com/ISKalsi/boomba-the-sapera/algorithm"
 	"github.com/stretchr/testify/assert"
 	"log"
-	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 )
 
 const PORT = "PORT"
-
-func TestSetupRoutes(t *testing.T) {
-	tests := []struct {
-		url    string
-		method string
-	}{
-		{"/", "GET"},
-		{"/start", "POST"},
-		{"/move", "POST"},
-		{"/end", "POST"},
-	}
-
-	var game NextMoveGetter = Snake{}
-	router := SetupRoutes(&game)
-
-	for _, test := range tests {
-		name := "\"" + test.url + "\""
-		t.Run(name, func(t *testing.T) {
-			w := httptest.NewRecorder()
-			body := strings.NewReader("{}")
-			req := httptest.NewRequest(test.method, test.url, body)
-
-			router.ServeHTTP(w, req)
-			assert.Equal(t, 200, w.Code)
-		})
-	}
-}
 
 func TestGetPortFromEnvVariable(t *testing.T) {
 	if err := os.Setenv(PORT, "1234"); err != nil {

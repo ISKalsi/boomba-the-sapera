@@ -10,6 +10,14 @@ type Coord struct {
 	Y int `json:"y"`
 }
 
+func (c *Coord) GetX() int {
+	return c.X
+}
+
+func (c *Coord) GetY() int {
+	return c.Y
+}
+
 type Battlesnake struct {
 	ID     string  `json:"id"`
 	Name   string  `json:"name"`

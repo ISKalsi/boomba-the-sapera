@@ -1,7 +1,7 @@
 package mux
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/algorithm"
+	"github.com/ISKalsi/boomba-the-sapera/algo"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -9,23 +9,14 @@ import (
 )
 
 type Mux struct {
-	getter *algorithm.NextMoveGetter
+	algorithm algo.PathSolver
 }
 
-func New(nextMoveGetter *algorithm.NextMoveGetter) *Mux {
-	return &Mux{getter: nextMoveGetter}
+func New() *Mux {
+	return &Mux{}
 }
 
-func decodeGameRequest(context *gin.Context) *models.GameRequest {
-	request := &models.GameRequest{}
-	if e := context.ShouldBindJSON(request); e != nil {
-		log.Fatal(e)
-	}
-
-	return request
-}
-
-func (h *Mux) HandleIndex(context *gin.Context) {
+func (m *Mux) HandleIndex(context *gin.Context) {
 	response := models.BattlesnakeInfoResponse{
 		APIVersion: "1",
 		Author:     "pavandubey",
@@ -37,20 +28,24 @@ func (h *Mux) HandleIndex(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, response)
 }
 
-func (h *Mux) HandleStart(_ *gin.Context) {
+func (m *Mux) HandleStart(context *gin.Context) {
+	request := decodeGameRequest(context)
+	log.Printf("%+v", request)
+	m.algorithm = algo.Init(request.Board)
+
 	log.Println("GAME STARTED.")
 }
 
-func (h *Mux) HandleMove(context *gin.Context) {
-	_ = decodeGameRequest(context)
+func (m *Mux) HandleMove(context *gin.Context) {
+	request := decodeGameRequest(context)
 
 	response := models.MoveResponse{
-		Move: (*h.getter).NextMove(),
+		Move: m.algorithm.NextMove(request),
 	}
 
-	context.JSON(http.StatusOK, &response)
+	context.JSON(http.StatusOK, response)
 }
 
-func (h *Mux) HandleEnd(_ *gin.Context) {
+func (m *Mux) HandleEnd(_ *gin.Context) {
 	log.Println("GAME ENDED.")
 }
