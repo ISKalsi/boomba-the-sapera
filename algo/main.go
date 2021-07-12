@@ -1,17 +1,18 @@
 package algo
 
 import (
+	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/ds/stack"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 )
 
 type Algorithm struct {
-	board      models.Board
-	start      models.Coord
-	end        models.Coord
-	solvedPath *stack.Stack
-	isSolving  bool
-	head       models.Coord
+	board       models.Board
+	start       models.Coord
+	destination models.Coord
+	solvedPath  *stack.Stack
+	isSolving   bool
+	head        models.Coord
 }
 
 type PathSolver interface {
@@ -21,12 +22,12 @@ type PathSolver interface {
 func Init(b models.Board) *Algorithm {
 	s := b.Snakes[0]
 	return &Algorithm{
-		board:      b,
-		start:      s.Head,
-		head:       s.Head,
-		end:        b.Food[0],
-		solvedPath: stack.New(),
-		isSolving:  false,
+		board:       b,
+		start:       s.Head,
+		head:        s.Head,
+		destination: b.Food[0],
+		solvedPath:  stack.New(),
+		isSolving:   false,
 	}
 }
 
@@ -35,35 +36,27 @@ func (a *Algorithm) reset(b models.Board) {
 	a.board = b
 	a.start = s.Head
 	a.head = s.Head
-	a.end = b.Food[0]
+	a.destination = b.Food[0]
 	a.solvedPath.Clear()
 	a.isSolving = false
 }
 
-func (a *Algorithm) NextMove(gr *models.GameRequest) string {
-	lengthChanged := false
-	for i, snake := range gr.Board.Snakes {
-		if a.board.Snakes[i].Length != snake.Length {
-			lengthChanged = true
-			break
-		}
-	}
+func (a *Algorithm) getNextDirection() string {
+	next := a.solvedPath.Pop().(models.Coord)
+	dir := grid.Diff(&next, &a.head)
+	a.head = next
+	return parseMoveDirectionToString(directions[dir])
+}
 
-	if lengthChanged {
-		a.reset(gr.Board)
-		if a.aStarSearch() {
-			return a.nextMove()
-		} else {
-			return getRandomMove("random move: ")
-		}
-	} else if a.solvedPath.Len() != 0 {
-		return a.nextMove()
+func (a *Algorithm) NextMove(gr *models.GameRequest) string {
+	if a.solvedPath.Len() != 0 {
+		return a.getNextDirection()
 	} else if a.isSolving {
 		return getRandomMove("solving...: ")
 	} else {
 		a.reset(gr.Board)
 		if a.aStarSearch() {
-			return a.nextMove()
+			return a.getNextDirection()
 		} else {
 			return getRandomMove("random move: ")
 		}

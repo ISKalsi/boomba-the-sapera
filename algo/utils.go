@@ -19,7 +19,7 @@ var directions = map[models.Coord]int{
 	{+1, 0}: RIGHT,
 }
 
-func parseMoveIndexToString(id int) string {
+func parseMoveDirectionToString(id int) string {
 	switch id {
 	case UP:
 		return "up"
@@ -36,7 +36,7 @@ func parseMoveIndexToString(id int) string {
 }
 
 func getRandomMove(msg string) string {
-	m := parseMoveIndexToString(UP)
+	m := parseMoveDirectionToString(UP)
 	println(msg + m)
 	return m
 }

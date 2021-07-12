@@ -5,90 +5,74 @@ import (
 	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/ds/pque"
-	"github.com/ISKalsi/boomba-the-sapera/models"
 )
 
-func (a *Algorithm) initOpenList(cells grid.Grid) *pque.PriorityQueue {
+func (a *Algorithm) initCellsToVisitList(cells grid.Grid) *pque.PriorityQueue {
 	start := cells[a.start]
 	start.F, start.G, start.H = 0, 0, 0
 	start.Coord = a.start
-	start.Parent = a.start
+	start.ParentCoord = a.start
 
-	openList := &pque.PriorityQueue{}
-	heap.Push(openList, start)
+	cellsToVisit := &pque.PriorityQueue{}
+	heap.Push(cellsToVisit, start)
 
-	return openList
+	return cellsToVisit
 }
 
 func (a *Algorithm) initGrid() grid.Grid {
 	g := grid.New(a.board.Width, a.board.Height)
-
-	for i := 0; i < a.board.Width; i++ {
-		for j := 0; j < a.board.Height; j++ {
-			c := models.Coord{X: j, Y: i}
-			g[c].Coord = c
-			g[c].IsBlocked = false
-		}
-	}
 
 	for _, snake := range a.board.Snakes {
 		for _, coord := range snake.Body {
 			g[coord].IsBlocked = true
 		}
 	}
+
 	return g
 }
 
 func (a *Algorithm) tracePath(g grid.Grid) {
-	current := a.end
-	parent := g[current].Parent
+	current := a.destination
+	parent := g[current].ParentCoord
 
 	for current != parent {
 		a.solvedPath.Push(current)
 		current = parent
-		parent = g[current].Parent
+		parent = g[current].ParentCoord
 	}
-}
-
-func (a *Algorithm) nextMove() string {
-	next := a.solvedPath.Pop().(models.Coord)
-	dir := grid.Diff(&next, &a.head)
-	a.head = next
-	return parseMoveIndexToString(directions[dir])
 }
 
 func (a *Algorithm) aStarSearch() bool {
 	a.isSolving = true
 
 	cells := a.initGrid()
-	visited := map[models.Coord]bool{}
-	openList := a.initOpenList(cells)
+	cellsToVisit := a.initCellsToVisitList(cells)
 
-	for openList.Len() != 0 {
-		current := heap.Pop(openList).(*cell.Cell)
-		visited[current.Coord] = true
+	for cellsToVisit.Len() != 0 {
+		currentCell := heap.Pop(cellsToVisit).(*cell.Cell)
+		currentCell.IsVisited = true
 
 		for dir := range directions {
-			coord := grid.Sum(current, &dir)
+			neighborCoord := grid.Sum(currentCell, &dir)
 
-			if !grid.IsOutOfGrid(&coord, a.board.Width, a.board.Height) {
-				neighbor := cells[coord]
+			if !grid.IsOutside(&neighborCoord, a.board.Width, a.board.Height) {
+				neighborCell := cells[neighborCoord]
 
-				if coord == a.end {
-					neighbor.Parent = current.Coord
+				if neighborCoord == a.destination {
+					neighborCell.ParentCoord = currentCell.Coord
 					a.tracePath(cells)
 					println("Path Found!")
 					a.isSolving = false
 					return true
-				} else if !visited[coord] && !cells.IsBlocked(&coord) {
-					g := current.G + 1
-					h := grid.CalculateHeuristics(&coord, &a.end)
+				} else if !neighborCell.IsVisited && !neighborCell.IsBlocked {
+					g := currentCell.G + 1
+					h := grid.CalculateHeuristics(&neighborCoord, &a.destination)
 					f := g + h
 
-					if neighbor.F == -1 || neighbor.F > f {
-						neighbor.F, neighbor.G, neighbor.H = f, g, h
-						neighbor.Parent = current.Coord
-						heap.Push(openList, neighbor)
+					if neighborCell.F == -1 || neighborCell.F > f {
+						neighborCell.F, neighborCell.G, neighborCell.H = f, g, h
+						neighborCell.ParentCoord = currentCell.Coord
+						heap.Push(cellsToVisit, neighborCell)
 					}
 				}
 			}

@@ -16,7 +16,7 @@ func CalculateHeuristics(source CoordProvider, destination CoordProvider) float6
 	return math.Abs(float64(dx)) + math.Abs(float64(dy))
 }
 
-func IsOutOfGrid(c CoordProvider, w int, h int) bool {
+func IsOutside(c CoordProvider, w int, h int) bool {
 	if c == nil {
 		return true
 	} else {

@@ -19,7 +19,7 @@ func TestParseMoveIndexToString(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(strings.ToUpper(test.expectedString), func(t *testing.T) {
-			m := parseMoveIndexToString(test.moveIndex)
+			m := parseMoveDirectionToString(test.moveIndex)
 			assert.Equal(t, test.expectedString, m)
 		})
 	}
@@ -27,6 +27,6 @@ func TestParseMoveIndexToString(t *testing.T) {
 
 func TestPanicFromParseMoveIndexToString(t *testing.T) {
 	assert.Panics(t, func() {
-		_ = parseMoveIndexToString(4)
+		_ = parseMoveDirectionToString(4)
 	})
 }

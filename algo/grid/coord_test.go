@@ -22,8 +22,8 @@ func TestIsOutOfGrid(t *testing.T) {
 	inside := models.Coord{X: 1, Y: 1}
 	outside := models.Coord{X: 15, Y: 15}
 
-	assert.False(t, IsOutOfGrid(&inside, w, h))
-	assert.True(t, IsOutOfGrid(&outside, w, h))
+	assert.False(t, IsOutside(&inside, w, h))
+	assert.True(t, IsOutside(&outside, w, h))
 }
 
 func TestSum(t *testing.T) {
