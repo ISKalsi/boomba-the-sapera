@@ -3,6 +3,7 @@ package algo
 import (
 	"container/heap"
 	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
+	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/ds/pque"
 )
@@ -17,18 +18,6 @@ func (a *Algorithm) initCellsToVisitList(cells grid.Grid) *pque.PriorityQueue {
 	heap.Push(cellsToVisit, start)
 
 	return cellsToVisit
-}
-
-func (a *Algorithm) initGrid() grid.Grid {
-	g := grid.New(a.board.Width, a.board.Height)
-
-	for _, snake := range a.board.Snakes {
-		for _, coord := range snake.Body {
-			g[coord].IsBlocked = true
-		}
-	}
-
-	return g
 }
 
 func (a *Algorithm) tracePath(g grid.Grid) {
@@ -53,9 +42,9 @@ func (a *Algorithm) aStarSearch() bool {
 		currentCell.IsVisited = true
 
 		for dir := range directions {
-			neighborCoord := grid.Sum(currentCell, &dir)
+			neighborCoord := coord.Sum(currentCell, &dir)
 
-			if !grid.IsOutside(&neighborCoord, a.board.Width, a.board.Height) {
+			if !coord.IsOutside(&neighborCoord, a.board.Width, a.board.Height) {
 				neighborCell := cells[neighborCoord]
 
 				if neighborCoord == a.destination {
@@ -66,7 +55,7 @@ func (a *Algorithm) aStarSearch() bool {
 					return true
 				} else if !neighborCell.IsVisited && !neighborCell.IsBlocked {
 					g := currentCell.G + 1
-					h := grid.CalculateHeuristics(&neighborCoord, &a.destination)
+					h := coord.CalculateHeuristics(&neighborCoord, &a.destination)
 					f := g + h
 
 					if neighborCell.F == -1 || neighborCell.F > f {

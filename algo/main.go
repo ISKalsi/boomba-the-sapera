@@ -1,7 +1,7 @@
 package algo
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
+	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
 	"github.com/ISKalsi/boomba-the-sapera/ds/stack"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 )
@@ -43,7 +43,7 @@ func (a *Algorithm) reset(b models.Board) {
 
 func (a *Algorithm) getNextDirection() string {
 	next := a.solvedPath.Pop().(models.Coord)
-	dir := grid.Diff(&next, &a.head)
+	dir := coord.Diff(&next, &a.head)
 	a.head = next
 	return parseMoveDirectionToString(directions[dir])
 }

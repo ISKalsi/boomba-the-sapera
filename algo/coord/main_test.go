@@ -1,4 +1,4 @@
-package grid
+package coord
 
 import (
 	"github.com/ISKalsi/boomba-the-sapera/models"

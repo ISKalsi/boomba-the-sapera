@@ -1,6 +1,9 @@
 package algo
 
 import (
+	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
+	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
+	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"log"
 )
@@ -39,4 +42,21 @@ func getRandomMove(msg string) string {
 	m := parseMoveDirectionToString(UP)
 	println(msg + m)
 	return m
+}
+
+func (a *Algorithm) initGrid() grid.Grid {
+	g := grid.New(a.board.Width, a.board.Height)
+
+	for _, snake := range a.board.Snakes {
+		for _, c := range snake.Body {
+			g[c].IsBlocked = true
+		}
+	}
+
+	return g
+}
+
+func (a *Algorithm) isOkAndNotVisited(cell *cell.Cell) bool {
+	return !coord.IsOutside(cell, a.board.Width, a.board.Height) &&
+		!cell.IsVisited && !cell.IsBlocked
 }
