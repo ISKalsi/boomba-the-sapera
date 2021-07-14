@@ -15,11 +15,18 @@ const (
 	RIGHT
 )
 
-var directions = map[models.Coord]int{
+var directionToIndex = map[models.Coord]int{
 	{0, +1}: UP,
 	{0, -1}: DOWN,
 	{-1, 0}: LEFT,
 	{+1, 0}: RIGHT,
+}
+
+var indexToDirection = map[int]models.Coord{
+	UP:    {0, +1},
+	DOWN:  {0, -1},
+	LEFT:  {-1, 0},
+	RIGHT: {+1, 0},
 }
 
 func parseMoveDirectionToString(id int) string {
@@ -42,6 +49,15 @@ func getRandomMove(msg string) string {
 	m := parseMoveDirectionToString(UP)
 	println(msg + m)
 	return m
+}
+
+func insert(a []*cell.Cell, index int, value *cell.Cell) []*cell.Cell {
+	if len(a) == index { // nil or empty slice or after last element
+		return append(a, value)
+	}
+	a = append(a[:index+1], a[index:]...) // index < len(a)
+	a[index] = value
+	return a
 }
 
 func (a *Algorithm) initGrid() grid.Grid {

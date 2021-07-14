@@ -45,7 +45,7 @@ func (a *Algorithm) getNextDirection() string {
 	next := a.solvedPath.Pop().(models.Coord)
 	dir := coord.Diff(&next, &a.head)
 	a.head = next
-	return parseMoveDirectionToString(directions[dir])
+	return parseMoveDirectionToString(directionToIndex[dir])
 }
 
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {

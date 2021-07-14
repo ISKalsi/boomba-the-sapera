@@ -41,7 +41,7 @@ func (a *Algorithm) aStarSearch() bool {
 		currentCell := heap.Pop(cellsToVisit).(*cell.Cell)
 		currentCell.IsVisited = true
 
-		for dir := range directions {
+		for dir := range directionToIndex {
 			neighborCoord := coord.Sum(currentCell, &dir)
 
 			if !coord.IsOutside(&neighborCoord, a.board.Width, a.board.Height) {
