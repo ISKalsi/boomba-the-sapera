@@ -5,13 +5,26 @@ import (
 	"github.com/ISKalsi/boomba-the-sapera/models"
 )
 
-func New(w int, h int) Grid {
-	m := Grid{}
+func Default(w int, h int) Grid {
+	g := Grid{}
 	for i := 0; i < h; i++ {
 		for j := 0; j < w; j++ {
-			c := models.Coord{X: i, Y: j}
-			m[c] = cell.New(c)
+			c := models.Coord{X: j, Y: i}
+			g[c] = cell.New(c)
 		}
 	}
-	return m
+	return g
+}
+
+func WithObstacles(w int, h int, providers []ObstacleProvider) Grid {
+	g := Default(w, h)
+
+	for _, p := range providers {
+		obstacles := p.GetBlockedCoords()
+		for _, c := range obstacles {
+			g[c].IsBlocked = true
+		}
+	}
+
+	return g
 }

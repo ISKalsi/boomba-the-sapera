@@ -7,6 +7,6 @@ import (
 
 type Grid map[models.Coord]*cell.Cell
 
-func (g Grid) IsBlocked(cell *models.Coord) bool {
-	return g[*cell].IsBlocked
+type ObstacleProvider interface {
+	GetBlockedCoords() []models.Coord
 }

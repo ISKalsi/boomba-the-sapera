@@ -28,6 +28,10 @@ type Battlesnake struct {
 	Shout  string  `json:"shout"`
 }
 
+func (b Battlesnake) GetBlockedCoords() []Coord {
+	return b.Body
+}
+
 type Board struct {
 	Height int           `json:"height"`
 	Width  int           `json:"width"`

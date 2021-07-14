@@ -67,15 +67,12 @@ func reverse(s []models.Coord) {
 }
 
 func (a *Algorithm) initGrid() grid.Grid {
-	g := grid.New(a.board.Width, a.board.Height)
-
-	for _, snake := range a.board.Snakes {
-		for _, c := range snake.Body {
-			g[c].IsBlocked = true
-		}
+	snakes := make([]grid.ObstacleProvider, len(a.board.Snakes))
+	for i, snake := range a.board.Snakes {
+		snakes[i] = snake
 	}
 
-	return g
+	return grid.WithObstacles(a.board.Width, a.board.Height, snakes)
 }
 
 func (a *Algorithm) isOkAndNotVisited(cell *cell.Cell) bool {
