@@ -51,13 +51,19 @@ func getRandomMove(msg string) string {
 	return m
 }
 
-func insert(a []*cell.Cell, index int, value *cell.Cell) []*cell.Cell {
+func insert(a []models.Coord, index int, value models.Coord) []models.Coord {
 	if len(a) == index { // nil or empty slice or after last element
 		return append(a, value)
 	}
 	a = append(a[:index+1], a[index:]...) // index < len(a)
 	a[index] = value
 	return a
+}
+
+func reverse(s []models.Coord) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
 }
 
 func (a *Algorithm) initGrid() grid.Grid {

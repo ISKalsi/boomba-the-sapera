@@ -1,23 +1,17 @@
 package algo
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
 	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
-	"github.com/ISKalsi/boomba-the-sapera/models"
 )
 
-func (a *Algorithm) longestPath() []*cell.Cell {
+func (a *Algorithm) longestPath() bool {
 	if pathFound := a.aStarSearch(); !pathFound {
-		a.solvedPath.Clear()
-		return make([]*cell.Cell, 0)
+		return false
 	}
 
 	cells := a.initGrid()
-	longestPath := make([]*cell.Cell, a.solvedPath.Len())
 
-	for i := 0; a.solvedPath.Len() != 0; i++ {
-		c := a.solvedPath.Pop().(models.Coord)
-		longestPath[i] = cells[c]
+	for _, c := range a.solvedPath {
 		cells[c].IsVisited = true
 	}
 
@@ -25,8 +19,8 @@ func (a *Algorithm) longestPath() []*cell.Cell {
 	w := a.board.Width
 	h := a.board.Height
 	for {
-		dirToNext := coord.Diff(longestPath[index], &current)
-		next := longestPath[index].Coord
+		dirToNext := coord.Diff(&a.solvedPath[index], &current)
+		next := a.solvedPath[index]
 
 		d := directionToIndex[dirToNext]
 		var tests [2]int
@@ -39,19 +33,19 @@ func (a *Algorithm) longestPath() []*cell.Cell {
 		extended := false
 		for _, test := range tests {
 			testDir := indexToDirection[test]
-			currentTest := coord.Sum(&current, &testDir)
-			nextTest := coord.Sum(&next, &testDir)
+			currentTestCoord := coord.Sum(&current, &testDir)
+			nextTestCoord := coord.Sum(&next, &testDir)
 
-			if !coord.IsOutside(&currentTest, w, h) && !coord.IsOutside(&nextTest, w, h) {
-				currentCell := cells[currentTest]
-				nextCell := cells[nextTest]
+			if !coord.IsOutside(&currentTestCoord, w, h) && !coord.IsOutside(&nextTestCoord, w, h) {
+				currentCell := cells[currentTestCoord]
+				nextCell := cells[nextTestCoord]
 
 				if a.isOkAndNotVisited(currentCell) && a.isOkAndNotVisited(nextCell) {
 					currentCell.IsVisited = true
 					nextCell.IsVisited = true
 
-					longestPath = insert(longestPath, index, currentCell)
-					longestPath = insert(longestPath, index+1, nextCell)
+					a.solvedPath = insert(a.solvedPath, index, currentTestCoord)
+					a.solvedPath = insert(a.solvedPath, index+1, nextTestCoord)
 
 					extended = true
 					break
@@ -62,11 +56,11 @@ func (a *Algorithm) longestPath() []*cell.Cell {
 		if !extended {
 			current = next
 			index++
-			if index >= len(longestPath) {
+			if index >= len(a.solvedPath) {
 				break
 			}
 		}
 	}
 
-	return longestPath
+	return true
 }

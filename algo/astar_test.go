@@ -10,5 +10,5 @@ func TestAStarSearch(t *testing.T) {
 	gr := testdata.StartGameRequest
 	a := Init(gr.Board)
 	assert.True(t, a.aStarSearch())
-	assert.True(t, a.solvedPath.Len() != 0)
+	assert.True(t, len(a.solvedPath) != 0)
 }

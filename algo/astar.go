@@ -25,10 +25,12 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 	parent := g[current].ParentCoord
 
 	for current != parent {
-		a.solvedPath.Push(current)
+		a.solvedPath = append(a.solvedPath, current)
 		current = parent
 		parent = g[current].ParentCoord
 	}
+
+	reverse(a.solvedPath)
 }
 
 func (a *Algorithm) aStarSearch() bool {
@@ -50,7 +52,6 @@ func (a *Algorithm) aStarSearch() bool {
 				if neighborCoord == a.destination {
 					neighborCell.ParentCoord = currentCell.Coord
 					a.tracePath(cells)
-					println("Path Found!")
 					a.isSolving = false
 					return true
 				} else if !neighborCell.IsVisited && !neighborCell.IsBlocked {
