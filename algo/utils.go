@@ -45,12 +45,6 @@ func parseMoveDirectionToString(id int) string {
 	}
 }
 
-func getRandomMove(msg string) string {
-	m := parseMoveDirectionToString(UP)
-	println(msg + m)
-	return m
-}
-
 func insert(a []models.Coord, index int, value models.Coord) []models.Coord {
 	if len(a) == index { // nil or empty slice or after last element
 		return append(a, value)
@@ -67,12 +61,12 @@ func reverse(s []models.Coord) {
 }
 
 func (a *Algorithm) initGrid() grid.Grid {
-	snakes := make([]grid.ObstacleProvider, len(a.board.Snakes))
+	obstacles := make([]grid.ObstacleProvider, len(a.board.Snakes))
 	for i, snake := range a.board.Snakes {
-		snakes[i] = snake
+		obstacles[i] = snake
 	}
 
-	return grid.WithObstacles(a.board.Width, a.board.Height, snakes)
+	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles)
 }
 
 func (a *Algorithm) isOkAndNotVisited(cell *cell.Cell) bool {

@@ -40,25 +40,48 @@ func (a *Algorithm) reset(b models.Board) {
 	a.isSolving = false
 }
 
-func (a *Algorithm) getNextDirection() string {
-	next := a.solvedPath[0]
-	a.solvedPath = a.solvedPath[1:]
+func (a *Algorithm) getDirection(next models.Coord) string {
 	dir := coord.Diff(&next, &a.head)
 	a.head = next
 	return parseMoveDirectionToString(directionToIndex[dir])
 }
 
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {
-	if len(a.solvedPath) != 0 {
-		return a.getNextDirection()
-	} else if a.isSolving {
-		return getRandomMove("solving...: ")
-	} else {
-		a.reset(gr.Board)
-		if a.aStarSearch() {
-			return a.getNextDirection()
-		} else {
-			return getRandomMove("random move: ")
+	a.reset(gr.Board)
+
+	if a.aStarSearch() {
+		shortestPathNextCoord := a.solvedPath[0]
+		g := a.initGrid()
+		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
+
+		a.start = virtualSnake[0]
+		a.destination = virtualSnake[len(virtualSnake)-1]
+
+		if a.longestPath() {
+			return a.getDirection(shortestPathNextCoord)
 		}
+	}
+
+	a.start = gr.You.Head
+	a.destination = gr.You.Body[len(gr.You.Body)-1]
+
+	if a.longestPath() {
+		return a.getDirection(a.solvedPath[0])
+	} else {
+		g := a.initGrid()
+		maxD := -1
+		var maxDir models.Coord
+
+		for dir := range directionToIndex {
+			test := coord.Sum(&gr.You.Head, &dir)
+			if !g[test].IsBlocked {
+				d := int(coord.CalculateHeuristics(&a.start, &a.board.Food[0]))
+				if d > maxD {
+					maxD = d
+				}
+			}
+		}
+
+		return parseMoveDirectionToString(directionToIndex[maxDir])
 	}
 }
