@@ -18,8 +18,7 @@ type PathSolver interface {
 	NextMove(gr *models.GameRequest) string
 }
 
-func Init(b models.Board) *Algorithm {
-	s := b.Snakes[0]
+func Init(b models.Board, s models.Battlesnake) *Algorithm {
 	return &Algorithm{
 		board:       b,
 		start:       s.Head,
@@ -30,8 +29,7 @@ func Init(b models.Board) *Algorithm {
 	}
 }
 
-func (a *Algorithm) reset(b models.Board) {
-	s := b.Snakes[0]
+func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
 	a.board = b
 	a.start = s.Head
 	a.head = s.Head
@@ -47,7 +45,7 @@ func (a *Algorithm) getDirection(next models.Coord) string {
 }
 
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {
-	a.reset(gr.Board)
+	a.reset(gr.Board, gr.You)
 
 	if a.aStarSearch() {
 		shortestPathNextCoord := a.solvedPath[0]

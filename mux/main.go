@@ -30,7 +30,7 @@ func (m *Mux) HandleIndex(context *gin.Context) {
 
 func (m *Mux) HandleStart(context *gin.Context) {
 	request := decodeGameRequest(context)
-	m.algorithm = algo.Init(request.Board)
+	m.algorithm = algo.Init(request.Board, request.You)
 
 	log.Println("GAME STARTED.")
 }
