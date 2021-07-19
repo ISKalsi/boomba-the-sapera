@@ -17,3 +17,10 @@ func TestNewCell(t *testing.T) {
 	assert.Equal(t, -1.0, c.H)
 	assert.Equal(t, false, c.IsBlocked)
 }
+
+func TestGetCellPriority(t *testing.T) {
+	priority := 10.0
+	c := New(models.Coord{})
+	c.F = priority
+	assert.Equal(t, priority, c.GetPriority())
+}

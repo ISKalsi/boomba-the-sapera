@@ -1,9 +1,5 @@
 package algo
 
-import (
-	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
-)
-
 func (a *Algorithm) longestPath() bool {
 	if pathFound := a.aStarSearch(); !pathFound {
 		return false
@@ -19,7 +15,7 @@ func (a *Algorithm) longestPath() bool {
 	w := a.board.Width
 	h := a.board.Height
 	for {
-		dirToNext := coord.Diff(&a.solvedPath[index], &current)
+		dirToNext := a.solvedPath[index].Diff(current)
 		next := a.solvedPath[index]
 
 		d := directionToIndex[dirToNext]
@@ -33,10 +29,10 @@ func (a *Algorithm) longestPath() bool {
 		extended := false
 		for _, test := range tests {
 			testDir := indexToDirection[test]
-			currentTestCoord := coord.Sum(&current, &testDir)
-			nextTestCoord := coord.Sum(&next, &testDir)
+			currentTestCoord := current.Sum(testDir)
+			nextTestCoord := next.Sum(testDir)
 
-			if !coord.IsOutside(&currentTestCoord, w, h) && !coord.IsOutside(&nextTestCoord, w, h) {
+			if !currentTestCoord.IsOutside(w, h) && !nextTestCoord.IsOutside(w, h) {
 				currentCell := cells[currentTestCoord]
 				nextCell := cells[nextTestCoord]
 

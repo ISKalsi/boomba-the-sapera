@@ -12,8 +12,8 @@ var StartGameRequest = GameRequest{
 		Height: 11,
 		Width:  11,
 		Food: []Coord{
-			{X: 7, Y: 10},
 			{X: 9, Y: 5},
+			{X: 7, Y: 10},
 		},
 		Snakes: []Battlesnake{
 			starterSnake,
@@ -32,8 +32,9 @@ var ThreeLengthSnakeRequest = GameRequest{
 		Height: 11,
 		Width:  11,
 		Food: []Coord{
+			{X: 1, Y: 0},
+			{X: 3, Y: 2},
 			{X: 6, Y: 10},
-			{X: 5, Y: 5},
 		},
 		Snakes: []Battlesnake{
 			threeLengthSnake,

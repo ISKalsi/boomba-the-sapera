@@ -1,7 +1,6 @@
 package algo
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 )
 
@@ -14,7 +13,6 @@ type Algorithm struct {
 	start          models.Coord
 	destination    models.Coord
 	solvedPath     []models.Coord
-	isSolving      bool
 	head           models.Coord
 	headCollisions possibleHeadCollisions
 }
@@ -32,9 +30,8 @@ func Init(b models.Board, s models.Battlesnake) *Algorithm {
 		board:          b,
 		start:          s.Head,
 		head:           s.Head,
-		destination:    b.Food[0],
+		destination:    s.Head.FindNearest(b.Food),
 		solvedPath:     make([]models.Coord, 0),
-		isSolving:      false,
 		headCollisions: possibleHeadCollisions{coords: []models.Coord{}},
 	}
 }
@@ -55,10 +52,10 @@ func (a *Algorithm) findPossibleLosingHeadCollisions(ourSnake models.Battlesnake
 	var dangerCoords []models.Coord
 	for _, opponent := range a.board.Snakes {
 		if opponent.Length >= ourSnake.Length {
-			h := coord.CalculateHeuristics(&ourSnake.Head, &opponent.Head)
+			h := ourSnake.Head.CalculateHeuristics(opponent.Head)
 			if h == 2 {
 				for dir := range directionToIndex {
-					c := coord.Sum(&opponent.Head, &dir)
+					c := opponent.Head.Sum(dir)
 					dangerCoords = append(dangerCoords, c)
 				}
 			}
@@ -72,14 +69,13 @@ func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
 	a.board = b
 	a.start = s.Head
 	a.head = s.Head
-	a.destination = b.Food[0]
+	a.destination = s.Head.FindNearest(b.Food)
 	a.clearSolvedPath()
-	a.isSolving = false
 	a.findPossibleLosingHeadCollisions(s)
 }
 
 func (a *Algorithm) getDirection(next models.Coord) string {
-	dir := coord.Diff(&next, &a.head)
+	dir := next.Diff(a.head)
 	a.head = next
 	return parseMoveDirectionToString(directionToIndex[dir])
 }
@@ -111,9 +107,9 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		var maxDir models.Coord
 
 		for dir := range directionToIndex {
-			test := coord.Sum(&gr.You.Head, &dir)
+			test := gr.You.Head.Sum(dir)
 			if !g[test].IsBlocked {
-				d := int(coord.CalculateHeuristics(&a.start, &a.board.Food[0]))
+				d := int(a.start.CalculateHeuristics(a.board.Food[0]))
 				if d > maxD {
 					maxD = d
 				}

@@ -3,7 +3,6 @@ package algo
 import (
 	"container/heap"
 	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
-	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/ds/pque"
 )
@@ -36,8 +35,6 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 }
 
 func (a *Algorithm) aStarSearch() bool {
-	a.isSolving = true
-
 	cells := a.initGrid()
 	cellsToVisit := a.initCellsToVisitList(cells)
 
@@ -46,19 +43,18 @@ func (a *Algorithm) aStarSearch() bool {
 		currentCell.IsVisited = true
 
 		for dir := range directionToIndex {
-			neighborCoord := coord.Sum(currentCell, &dir)
+			neighborCoord := currentCell.Coord.Sum(dir)
 
-			if !coord.IsOutside(&neighborCoord, a.board.Width, a.board.Height) {
+			if !neighborCoord.IsOutside(a.board.Width, a.board.Height) {
 				neighborCell := cells[neighborCoord]
 
 				if neighborCoord == a.destination {
 					neighborCell.ParentCoord = currentCell.Coord
 					a.tracePath(cells)
-					a.isSolving = false
 					return true
 				} else if !neighborCell.IsVisited && !neighborCell.IsBlocked {
 					g := currentCell.G + 1
-					h := coord.CalculateHeuristics(&neighborCoord, &a.destination)
+					h := neighborCoord.CalculateHeuristics(a.destination)
 					f := g + h
 
 					if neighborCell.F == -1 || neighborCell.F > f {
@@ -71,6 +67,5 @@ func (a *Algorithm) aStarSearch() bool {
 		}
 	}
 
-	a.isSolving = false
 	return false
 }

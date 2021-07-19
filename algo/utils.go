@@ -2,7 +2,6 @@ package algo
 
 import (
 	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
-	"github.com/ISKalsi/boomba-the-sapera/algo/coord"
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"log"
@@ -72,6 +71,6 @@ func (a *Algorithm) initGrid() grid.Grid {
 }
 
 func (a *Algorithm) isOkAndNotVisited(cell *cell.Cell) bool {
-	return !coord.IsOutside(cell, a.board.Width, a.board.Height) &&
+	return cell.Coord.IsOutside(a.board.Width, a.board.Height) &&
 		!cell.IsVisited && !cell.IsBlocked
 }
