@@ -21,7 +21,7 @@ func (a *Algorithm) initCellsToVisitList(cells grid.Grid) *pque.PriorityQueue {
 }
 
 func (a *Algorithm) tracePath(g grid.Grid) {
-	a.solvedPath = a.solvedPath[:0]
+	a.clearSolvedPath()
 
 	current := a.destination
 	parent := g[current].ParentCoord
