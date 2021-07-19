@@ -66,6 +66,8 @@ func (a *Algorithm) initGrid() grid.Grid {
 		obstacles[i] = snake
 	}
 
+	obstacles = append(obstacles, a.headCollisions)
+
 	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles)
 }
 

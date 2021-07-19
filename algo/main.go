@@ -5,28 +5,55 @@ import (
 	"github.com/ISKalsi/boomba-the-sapera/models"
 )
 
-type Algorithm struct {
-	board       models.Board
-	start       models.Coord
-	destination models.Coord
-	solvedPath  []models.Coord
-	isSolving   bool
-	head        models.Coord
-}
-
 type PathSolver interface {
 	NextMove(gr *models.GameRequest) string
 }
 
+type Algorithm struct {
+	board          models.Board
+	start          models.Coord
+	destination    models.Coord
+	solvedPath     []models.Coord
+	isSolving      bool
+	head           models.Coord
+	headCollisions possibleHeadCollisions
+}
+
+type possibleHeadCollisions struct {
+	coords []models.Coord
+}
+
+func (phc possibleHeadCollisions) GetBlockedCoords() []models.Coord {
+	return phc.coords
+}
+
 func Init(b models.Board, s models.Battlesnake) *Algorithm {
 	return &Algorithm{
-		board:       b,
-		start:       s.Head,
-		head:        s.Head,
-		destination: b.Food[0],
-		solvedPath:  make([]models.Coord, 0),
-		isSolving:   false,
+		board:          b,
+		start:          s.Head,
+		head:           s.Head,
+		destination:    b.Food[0],
+		solvedPath:     make([]models.Coord, 0),
+		isSolving:      false,
+		headCollisions: possibleHeadCollisions{coords: []models.Coord{}},
 	}
+}
+
+func (a *Algorithm) findPossibleLosingHeadCollisions(ourSnake models.Battlesnake) {
+	var dangerCoords []models.Coord
+	for _, opponent := range a.board.Snakes {
+		if opponent.Length >= ourSnake.Length {
+			h := coord.CalculateHeuristics(&ourSnake.Head, &opponent.Head)
+			if h == 2 {
+				for dir := range directionToIndex {
+					c := coord.Sum(&opponent.Head, &dir)
+					dangerCoords = append(dangerCoords, c)
+				}
+			}
+		}
+	}
+
+	a.headCollisions.coords = dangerCoords
 }
 
 func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
@@ -36,6 +63,7 @@ func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
 	a.destination = b.Food[0]
 	a.solvedPath = a.solvedPath[:0]
 	a.isSolving = false
+	a.findPossibleLosingHeadCollisions(s)
 }
 
 func (a *Algorithm) getDirection(next models.Coord) string {
