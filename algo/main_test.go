@@ -16,11 +16,11 @@ func TestNextMove_SnakeAtEdge(t *testing.T) {
 	assert.Equal(t, expectedMove, nextMove)
 }
 
-func TestNextMove_CollideInItselfBug(t *testing.T) {
-	gr := collide_in_itself.EdgeCaseRequest3
+func TestNextMove_CollideInItselfEdgeCase1(t *testing.T) {
+	gr := collide_in_itself.EdgeCaseRequest1
 	a := Init(gr.Board, gr.You)
 
 	nextMove := a.NextMove(&gr)
-	notExpectedMove := parseMoveDirectionToString(RIGHT)
-	assert.Equal(t, notExpectedMove, nextMove)
+	notExpectedMove := parseMoveDirectionToString(UP)
+	assert.NotEqual(t, notExpectedMove, nextMove)
 }

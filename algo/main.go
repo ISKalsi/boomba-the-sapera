@@ -126,7 +126,19 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 		for dir := range directionToIndex {
 			test := gr.You.Head.Sum(dir)
-			if !test.IsOutside(a.board.Width, a.board.Height) && !g[test].IsBlocked {
+			isOwnBody := false
+			for i := range gr.You.Body {
+				if gr.You.Body[i] == test {
+					isOwnBody = true
+					break
+				}
+			}
+
+			if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
+				continue
+			}
+
+			if !g[test].IsBlocked || maxD == -1 {
 				d := int(a.start.CalculateHeuristics(a.board.Food[0]))
 				if d > maxD {
 					maxD = d

@@ -2,7 +2,7 @@ package collide_in_itself
 
 import . "github.com/ISKalsi/boomba-the-sapera/models"
 
-var EdgeCaseRequest3 = GameRequest{
+var _ = GameRequest{
 	Game: Game{
 		ID:      "b20ef6ad-8a9d-4afd-8d29-977aa7b41006",
 		Timeout: 500,
