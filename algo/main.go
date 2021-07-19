@@ -56,7 +56,9 @@ func (a *Algorithm) findPossibleLosingHeadCollisions(ourSnake models.Battlesnake
 			if h == 2 {
 				for dir := range directionToIndex {
 					c := opponent.Head.Sum(dir)
-					dangerCoords = append(dangerCoords, c)
+					if !c.IsOutside(a.board.Width, a.board.Height) {
+						dangerCoords = append(dangerCoords, c)
+					}
 				}
 			}
 		}
@@ -108,10 +110,11 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 		for dir := range directionToIndex {
 			test := gr.You.Head.Sum(dir)
-			if !g[test].IsBlocked {
+			if !test.IsOutside(a.board.Width, a.board.Height) && !g[test].IsBlocked {
 				d := int(a.start.CalculateHeuristics(a.board.Food[0]))
 				if d > maxD {
 					maxD = d
+					maxDir = dir
 				}
 			}
 		}

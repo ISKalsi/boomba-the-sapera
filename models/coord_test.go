@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// (\w*)\(\&(.*?),[ ]?[&]?(.*?)\)
 func TestCalculateHeuristics(t *testing.T) {
 	start := Coord{X: 1, Y: 3}
 	end := Coord{X: 3, Y: 2}
