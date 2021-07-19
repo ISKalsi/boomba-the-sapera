@@ -36,8 +36,11 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 
 func (a *Algorithm) aStarSearch() bool {
 	cells := a.initGrid()
-	cellsToVisit := a.initCellsToVisitList(cells)
+	if cells[a.destination].IsBlocked {
+		return false
+	}
 
+	cellsToVisit := a.initCellsToVisitList(cells)
 	for cellsToVisit.Len() != 0 {
 		currentCell := heap.Pop(cellsToVisit).(*cell.Cell)
 		currentCell.IsVisited = true
