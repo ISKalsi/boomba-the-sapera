@@ -12,6 +12,7 @@ type Algorithm struct {
 	board          models.Board
 	start          models.Coord
 	destination    models.Coord
+	isGoingToTail  bool
 	solvedPath     []models.Coord
 	head           models.Coord
 	headCollisions possibleHeadCollisions
@@ -71,6 +72,7 @@ func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
 	a.board = b
 	a.start = s.Head
 	a.head = s.Head
+	a.isGoingToTail = false
 	a.destination = s.Head.FindNearest(b.Food)
 	a.clearSolvedPath()
 	a.findPossibleLosingHeadCollisions(s)
@@ -90,16 +92,30 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		g := a.initGrid()
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
 
+		virtualBoard := gr.Board
+		for i := range virtualBoard.Snakes {
+			if virtualBoard.Snakes[i].ID == gr.You.ID {
+				virtualBoard.Snakes[i].Body = virtualSnake
+				virtualBoard.Snakes[i].Head = virtualSnake[0]
+				break
+			}
+		}
+
+		a.board = virtualBoard
 		a.SetNewStart(virtualSnake[0])
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
+		a.isGoingToTail = true
 
 		if a.longestPath() {
 			return a.getDirection(shortestPathNextCoord)
+		} else {
+			a.board = gr.Board
 		}
 	}
 
 	a.SetNewStart(gr.You.Head)
 	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+	a.isGoingToTail = true
 
 	if a.longestPath() {
 		return a.getDirection(a.solvedPath[0])
