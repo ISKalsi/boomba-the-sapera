@@ -1,8 +1,8 @@
-package testdata
+package out_of_bounds
 
 import . "github.com/ISKalsi/boomba-the-sapera/models"
 
-var OutOfBoundsEdgeCaseRequest = GameRequest{
+var EdgeCaseRequest1 = GameRequest{
 	Game: Game{
 		ID:      "77f14cc5-9ada-413d-b42f-c67d3a2c4234",
 		Timeout: 500,

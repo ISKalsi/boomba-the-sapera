@@ -92,16 +92,18 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		g := a.initGrid()
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
 
-		virtualBoard := gr.Board
-		for i := range virtualBoard.Snakes {
-			if virtualBoard.Snakes[i].ID == gr.You.ID {
-				virtualBoard.Snakes[i].Body = virtualSnake
-				virtualBoard.Snakes[i].Head = virtualSnake[0]
+		ourSnakeIndex := 0
+		originalSnakeBody := gr.You.Body[:]
+
+		for i := range a.board.Snakes {
+			if a.board.Snakes[i].ID == gr.You.ID {
+				ourSnakeIndex = i
+				a.board.Snakes[i].Body = virtualSnake
+				a.board.Snakes[i].Head = virtualSnake[0]
 				break
 			}
 		}
 
-		a.board = virtualBoard
 		a.SetNewStart(virtualSnake[0])
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
 		a.isGoingToTail = true
@@ -109,7 +111,8 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		if a.longestPath() {
 			return a.getDirection(shortestPathNextCoord)
 		} else {
-			a.board = gr.Board
+			a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
+			a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
 		}
 	}
 
