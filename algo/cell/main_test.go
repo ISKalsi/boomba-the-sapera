@@ -16,6 +16,8 @@ func TestNewCell(t *testing.T) {
 	assert.Equal(t, -1.0, c.G)
 	assert.Equal(t, -1.0, c.H)
 	assert.Equal(t, false, c.IsBlocked)
+	assert.Equal(t, false, c.ShouldBeBlocked)
+	assert.Equal(t, false, c.IsVisited)
 }
 
 func TestGetCellPriority(t *testing.T) {

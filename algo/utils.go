@@ -65,12 +65,16 @@ func (a *Algorithm) initGrid() grid.Grid {
 		obstacles[i] = snake
 	}
 
-	obstacles = append(obstacles, a.headCollisions)
+	maybeObstacles := make([]grid.PotentialObstacleProvider, 1)
+	maybeObstacles[0] = a.headCollisions
 
-	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles)
+	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles, maybeObstacles)
+}
+
+func (a *Algorithm) isOk(cell *cell.Cell) bool {
+	return !(cell.IsBlocked || cell.ShouldBeBlocked)
 }
 
 func (a *Algorithm) isOkAndNotVisited(cell *cell.Cell) bool {
-	return cell.Coord.IsOutside(a.board.Width, a.board.Height) &&
-		!cell.IsVisited && !cell.IsBlocked
+	return !cell.IsVisited && a.isOk(cell)
 }

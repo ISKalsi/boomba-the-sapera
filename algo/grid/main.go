@@ -11,6 +11,10 @@ type ObstacleProvider interface {
 	GetBlockedCoords() []models.Coord
 }
 
+type PotentialObstacleProvider interface {
+	GetProbablyBlockedCoords() []models.Coord
+}
+
 func Default(w int, h int) Grid {
 	g := Grid{}
 	for i := 0; i < h; i++ {
@@ -22,13 +26,20 @@ func Default(w int, h int) Grid {
 	return g
 }
 
-func WithObstacles(w int, h int, providers []ObstacleProvider) Grid {
+func WithObstacles(w int, h int, op []ObstacleProvider, maybeOp []PotentialObstacleProvider) Grid {
 	g := Default(w, h)
 
-	for _, p := range providers {
+	for _, p := range op {
 		obstacles := p.GetBlockedCoords()
 		for _, c := range obstacles {
 			g[c].IsBlocked = true
+		}
+	}
+
+	for _, p := range maybeOp {
+		maybeObstacles := p.GetProbablyBlockedCoords()
+		for _, c := range maybeObstacles {
+			g[c].ShouldBeBlocked = true
 		}
 	}
 

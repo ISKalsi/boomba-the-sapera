@@ -2,6 +2,7 @@ package algo
 
 import (
 	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_itself"
+	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_snake"
 	"github.com/ISKalsi/boomba-the-sapera/testdata/out_of_bounds"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -25,6 +26,15 @@ func TestNextMove_OutOfBoundsEdgeCase2(t *testing.T) {
 	assert.NotEqual(t, notExpectedMove, nextMove)
 }
 
+func TestNextMove_OutOfBoundsEdgeCase3(t *testing.T) {
+	gr := out_of_bounds.EdgeCaseRequest3
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(&gr)
+	notExpectedMove := parseMoveDirectionToString(UP)
+	assert.NotEqual(t, notExpectedMove, nextMove)
+}
+
 func TestNextMove_CollideInItselfEdgeCase1(t *testing.T) {
 	gr := collide_in_itself.EdgeCaseRequest1
 	a := Init(gr.Board, gr.You)
@@ -40,5 +50,23 @@ func TestNextMove_CollideInItselfEdgeCase4(t *testing.T) {
 
 	nextMove := a.NextMove(&gr)
 	notExpectedMove := parseMoveDirectionToString(DOWN)
+	assert.NotEqual(t, notExpectedMove, nextMove)
+}
+
+func TestNextMove_CollideInItselfEdgeCase5(t *testing.T) {
+	gr := collide_in_itself.EdgeCaseRequest5
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(&gr)
+	notExpectedMove := parseMoveDirectionToString(UP)
+	assert.NotEqual(t, notExpectedMove, nextMove)
+}
+
+func TestNextMove_CollideInSnakeEdgeCase1(t *testing.T) {
+	gr := collide_in_snake.EdgeCaseRequest1
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(&gr)
+	notExpectedMove := parseMoveDirectionToString(LEFT)
 	assert.NotEqual(t, notExpectedMove, nextMove)
 }

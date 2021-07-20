@@ -22,7 +22,7 @@ type possibleHeadCollisions struct {
 	coords []models.Coord
 }
 
-func (phc possibleHeadCollisions) GetBlockedCoords() []models.Coord {
+func (phc possibleHeadCollisions) GetProbablyBlockedCoords() []models.Coord {
 	return phc.coords
 }
 
@@ -129,24 +129,23 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 		for dir := range directionToIndex {
 			test := gr.You.Head.Sum(dir)
-			isOwnBody := false
-			for i := range gr.You.Body {
-				if gr.You.Body[i] == test {
-					isOwnBody = true
-					break
-				}
-			}
 
+			isOwnBody := gr.You.Body[1] == test
 			if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
 				continue
 			}
 
-			if !g[test].IsBlocked || maxD == -1 {
-				d := int(a.start.CalculateHeuristics(a.board.Food[0]))
-				if d > maxD {
-					maxD = d
-					maxDir = dir
-				}
+			if maxD == -1 && !g[test].IsBlocked {
+				maxD = int(a.start.CalculateHeuristics(a.board.Food[0]))
+				maxDir = dir
+			} else if !a.isOk(g[test]) {
+				continue
+			}
+
+			d := int(a.start.CalculateHeuristics(a.board.Food[0]))
+			if d > maxD {
+				maxD = d
+				maxDir = dir
 			}
 		}
 

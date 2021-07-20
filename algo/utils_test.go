@@ -128,7 +128,8 @@ func TestHeadCollisions(t *testing.T) {
 			g := a.initGrid()
 
 			for _, c := range test.coordsToCheck {
-				assert.Equal(t, test.areBlocked, g[c].IsBlocked)
+				assert.Equal(t, test.areBlocked, g[c].ShouldBeBlocked)
+				assert.False(t, false, g[c].IsBlocked)
 			}
 		})
 	}

@@ -4,10 +4,11 @@ import "github.com/ISKalsi/boomba-the-sapera/models"
 
 type Cell struct {
 	models.Coord
-	ParentCoord models.Coord
-	F, G, H     float64
-	IsBlocked   bool
-	IsVisited   bool
+	ParentCoord     models.Coord
+	F, G, H         float64
+	IsBlocked       bool
+	ShouldBeBlocked bool
+	IsVisited       bool
 }
 
 func (c Cell) GetPriority() float64 {
@@ -16,12 +17,13 @@ func (c Cell) GetPriority() float64 {
 
 func New(coord models.Coord) *Cell {
 	return &Cell{
-		Coord:       coord,
-		ParentCoord: models.Coord{X: -1, Y: -1},
-		F:           -1,
-		G:           -1,
-		H:           -1,
-		IsBlocked:   false,
-		IsVisited:   false,
+		Coord:           coord,
+		ParentCoord:     models.Coord{X: -1, Y: -1},
+		F:               -1,
+		G:               -1,
+		H:               -1,
+		IsBlocked:       false,
+		ShouldBeBlocked: false,
+		IsVisited:       false,
 	}
 }
