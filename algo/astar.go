@@ -36,7 +36,7 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 
 func (a *Algorithm) aStarSearch() bool {
 	cells := a.initGrid()
-	if !a.isGoingToTail && !a.isOk(cells[a.destination]) {
+	if !a.isGoingToTail && !cells[a.destination].IsOk() {
 		return false
 	}
 
@@ -55,7 +55,7 @@ func (a *Algorithm) aStarSearch() bool {
 					neighborCell.ParentCoord = currentCell.Coord
 					a.tracePath(cells)
 					return true
-				} else if a.isOkAndNotVisited(neighborCell) {
+				} else if neighborCell.IsOkAndNotVisited() {
 					g := currentCell.G + 1
 					h := neighborCoord.CalculateHeuristics(a.destination)
 					f := g + h

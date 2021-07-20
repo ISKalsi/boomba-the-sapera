@@ -36,7 +36,7 @@ func (a *Algorithm) longestPath() bool {
 				currentCell := cells[currentTestCoord]
 				nextCell := cells[nextTestCoord]
 
-				if a.isOkAndNotVisited(currentCell) && a.isOkAndNotVisited(nextCell) {
+				if currentCell.IsOkAndNotVisited() && nextCell.IsOkAndNotVisited() {
 					currentCell.IsVisited = true
 					nextCell.IsVisited = true
 

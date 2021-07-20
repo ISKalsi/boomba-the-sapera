@@ -138,7 +138,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			if maxD == -1 && !g[test].IsBlocked {
 				maxD = int(a.start.CalculateHeuristics(a.board.Food[0]))
 				maxDir = dir
-			} else if !a.isOk(g[test]) {
+			} else if !g[test].IsOk() {
 				continue
 			}
 

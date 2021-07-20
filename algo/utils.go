@@ -1,7 +1,6 @@
 package algo
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"log"
@@ -69,12 +68,4 @@ func (a *Algorithm) initGrid() grid.Grid {
 	maybeObstacles[0] = a.headCollisions
 
 	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles, maybeObstacles)
-}
-
-func (a *Algorithm) isOk(cell *cell.Cell) bool {
-	return !(cell.IsBlocked || cell.ShouldBeBlocked)
-}
-
-func (a *Algorithm) isOkAndNotVisited(cell *cell.Cell) bool {
-	return !cell.IsVisited && a.isOk(cell)
 }

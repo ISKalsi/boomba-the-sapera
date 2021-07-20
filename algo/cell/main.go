@@ -27,3 +27,11 @@ func New(coord models.Coord) *Cell {
 		IsVisited:       false,
 	}
 }
+
+func (c Cell) IsOk() bool {
+	return !(c.IsBlocked || c.ShouldBeBlocked)
+}
+
+func (c Cell) IsOkAndNotVisited() bool {
+	return !c.IsVisited && c.IsOk()
+}
