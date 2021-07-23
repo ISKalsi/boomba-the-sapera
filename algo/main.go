@@ -1,6 +1,7 @@
 package algo
 
 import (
+	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 )
 
@@ -16,14 +17,6 @@ type Algorithm struct {
 	solvedPath     []models.Coord
 	head           models.Coord
 	headCollisions possibleHeadCollisions
-}
-
-type possibleHeadCollisions struct {
-	coords []models.Coord
-}
-
-func (phc possibleHeadCollisions) GetProbablyBlockedCoords() []models.Coord {
-	return phc.coords
 }
 
 func Init(b models.Board, s models.Battlesnake) *Algorithm {
@@ -82,6 +75,18 @@ func (a *Algorithm) getDirection(next models.Coord) string {
 	dir := next.Diff(a.head)
 	a.head = next
 	return parseMoveDirectionToString(directionToIndex[dir])
+}
+
+func (a *Algorithm) initGrid() grid.Grid {
+	obstacles := make([]grid.ObstacleProvider, len(a.board.Snakes))
+	for i, snake := range a.board.Snakes {
+		obstacles[i] = snake
+	}
+
+	maybeObstacles := make([]grid.PotentialObstacleProvider, 1)
+	maybeObstacles[0] = a.headCollisions
+
+	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles, maybeObstacles)
 }
 
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {

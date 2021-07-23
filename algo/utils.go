@@ -1,7 +1,6 @@
 package algo
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"log"
 )
@@ -56,16 +55,4 @@ func reverse(s []models.Coord) {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
-}
-
-func (a *Algorithm) initGrid() grid.Grid {
-	obstacles := make([]grid.ObstacleProvider, len(a.board.Snakes))
-	for i, snake := range a.board.Snakes {
-		obstacles[i] = snake
-	}
-
-	maybeObstacles := make([]grid.PotentialObstacleProvider, 1)
-	maybeObstacles[0] = a.headCollisions
-
-	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles, maybeObstacles)
 }

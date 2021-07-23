@@ -1,72 +1,78 @@
 package algo
 
 import (
-	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_itself"
-	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_snake"
-	"github.com/ISKalsi/boomba-the-sapera/testdata/out_of_bounds"
+	"github.com/ISKalsi/boomba-the-sapera/models"
+	"github.com/ISKalsi/boomba-the-sapera/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestNextMove_OutOfBoundsEdgeCase1(t *testing.T) {
-	gr := out_of_bounds.EdgeCaseRequest1
-	a := Init(gr.Board, gr.You)
+func TestHeadCollisions(t *testing.T) {
+	tests := []struct {
+		name          string
+		gr            models.GameRequest
+		coordsToCheck []models.Coord
+		areBlocked    bool
+	}{
+		{
+			"Win condition",
+			testdata.WinCollidingSnakesRequest,
+			[]models.Coord{
+				{6, 6},
+				{6, 4},
+				{5, 5},
+			},
+			false,
+		},
+		{
+			"Lose condition",
+			testdata.LoseCollidingSnakesRequest,
+			[]models.Coord{
+				{6, 4},
+				{4, 4},
+				{5, 5},
+			},
+			true,
+		},
+		{
+			"Equal length condition",
+			testdata.EqualLengthCollidingSnakesRequest,
+			[]models.Coord{
+				{6, 4},
+				{4, 4},
+				{5, 5},
+			},
+			true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			gr := test.gr
+			a := Init(gr.Board, gr.You)
+			assert.NotNil(t, a.headCollisions.coords)
 
-	nextMove := a.NextMove(&gr)
-	expectedMove := parseMoveDirectionToString(RIGHT)
-	assert.Equal(t, expectedMove, nextMove)
+			a.reset(gr.Board, gr.You)
+
+			g := a.initGrid()
+
+			for _, c := range test.coordsToCheck {
+				assert.Equal(t, test.areBlocked, g[c].ShouldBeBlocked)
+				assert.False(t, false, g[c].IsBlocked)
+			}
+		})
+	}
 }
 
-func TestNextMove_OutOfBoundsEdgeCase2(t *testing.T) {
-	gr := out_of_bounds.EdgeCaseRequest2
+func TestFindNearestFood(t *testing.T) {
+	gr := testdata.StartGameRequest
 	a := Init(gr.Board, gr.You)
 
-	nextMove := a.NextMove(&gr)
-	notExpectedMove := parseMoveDirectionToString(UP)
-	assert.NotEqual(t, notExpectedMove, nextMove)
-}
+	expectedNearest := models.Coord{X: 7, Y: 10}
+	assert.Equal(t, expectedNearest, a.destination)
 
-func TestNextMove_OutOfBoundsEdgeCase3(t *testing.T) {
-	gr := out_of_bounds.EdgeCaseRequest3
-	a := Init(gr.Board, gr.You)
+	gr = testdata.ThreeLengthSnakeRequest
+	a.reset(gr.Board, gr.You)
 
-	nextMove := a.NextMove(&gr)
-	notExpectedMove := parseMoveDirectionToString(UP)
-	assert.NotEqual(t, notExpectedMove, nextMove)
-}
-
-func TestNextMove_CollideInItselfEdgeCase1(t *testing.T) {
-	gr := collide_in_itself.EdgeCaseRequest1
-	a := Init(gr.Board, gr.You)
-
-	nextMove := a.NextMove(&gr)
-	notExpectedMove := parseMoveDirectionToString(UP)
-	assert.NotEqual(t, notExpectedMove, nextMove)
-}
-
-func TestNextMove_CollideInItselfEdgeCase4(t *testing.T) {
-	gr := collide_in_itself.EdgeCaseRequest4
-	a := Init(gr.Board, gr.You)
-
-	nextMove := a.NextMove(&gr)
-	notExpectedMove := parseMoveDirectionToString(DOWN)
-	assert.NotEqual(t, notExpectedMove, nextMove)
-}
-
-func TestNextMove_CollideInItselfEdgeCase5(t *testing.T) {
-	gr := collide_in_itself.EdgeCaseRequest5
-	a := Init(gr.Board, gr.You)
-
-	nextMove := a.NextMove(&gr)
-	notExpectedMove := parseMoveDirectionToString(UP)
-	assert.NotEqual(t, notExpectedMove, nextMove)
-}
-
-func TestNextMove_CollideInSnakeEdgeCase1(t *testing.T) {
-	gr := collide_in_snake.EdgeCaseRequest1
-	a := Init(gr.Board, gr.You)
-
-	nextMove := a.NextMove(&gr)
-	notExpectedMove := parseMoveDirectionToString(LEFT)
-	assert.NotEqual(t, notExpectedMove, nextMove)
+	expectedNearest = models.Coord{X: 6, Y: 10}
+	assert.Equal(t, expectedNearest, a.destination)
 }
