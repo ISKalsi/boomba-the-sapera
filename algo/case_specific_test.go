@@ -3,6 +3,7 @@ package algo
 import (
 	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_itself"
 	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_snake"
+	"github.com/ISKalsi/boomba-the-sapera/testdata/hazard_related"
 	"github.com/ISKalsi/boomba-the-sapera/testdata/out_of_bounds"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -69,4 +70,13 @@ func TestNextMove_CollideInSnakeEdgeCase1(t *testing.T) {
 	nextMove := a.NextMove(&gr)
 	notExpectedMove := parseMoveDirectionToString(LEFT)
 	assert.NotEqual(t, notExpectedMove, nextMove)
+}
+
+func TestNoPathToTailAndAvoidHazard(t *testing.T) {
+	gr := hazard_related.EdgeCaseRequest1
+	a := Init(gr.Board, gr.You)
+
+	actualNextMove := a.NextMove(&gr)
+	expectedNextMove := parseMoveDirectionToString(RIGHT)
+	assert.Equal(t, expectedNextMove, actualNextMove)
 }

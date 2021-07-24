@@ -136,7 +136,8 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		return a.getDirection(a.solvedPath[0])
 	} else {
 		g := a.initGrid()
-		maxD := -1
+		foodCoord := a.board.Food[0]
+		minF := -1.0
 		var maxDir models.Coord
 
 		for dir := range directionToIndex {
@@ -147,16 +148,18 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				continue
 			}
 
-			if maxD == -1 && !g[test].IsBlocked {
-				maxD = int(a.start.CalculateHeuristics(a.board.Food[0]))
+			if minF == -1 && !g[test].IsBlocked {
+				minF = a.start.CalculateHeuristics(foodCoord) + g[test].Weight
 				maxDir = dir
 			} else if !g[test].IsOk() {
 				continue
 			}
 
-			d := int(a.start.CalculateHeuristics(a.board.Food[0]))
-			if d > maxD {
-				maxD = d
+			H := a.start.CalculateHeuristics(foodCoord)
+			G := g[test].Weight
+			F := G - H
+			if F < minF {
+				minF = F
 				maxDir = dir
 			}
 		}
