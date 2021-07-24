@@ -1,6 +1,7 @@
 package algo
 
 import (
+	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 )
@@ -86,7 +87,13 @@ func (a *Algorithm) initGrid() grid.Grid {
 	maybeObstacles := make([]grid.PotentialObstacleProvider, 1)
 	maybeObstacles[0] = a.headCollisions
 
-	return grid.WithObstacles(a.board.Width, a.board.Height, obstacles, maybeObstacles)
+	g := grid.WithObstacles(a.board.Width, a.board.Height, obstacles, maybeObstacles)
+
+	for _, hazardCoord := range a.board.Hazards {
+		g[hazardCoord].Weight = cell.WeightHazard
+	}
+
+	return g
 }
 
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {

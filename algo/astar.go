@@ -56,7 +56,7 @@ func (a *Algorithm) aStarSearch() bool {
 					a.tracePath(cells)
 					return true
 				} else if neighborCell.IsOkAndNotVisited() {
-					g := currentCell.G + 1
+					g := currentCell.G + neighborCell.Weight
 					h := neighborCoord.CalculateHeuristics(a.destination)
 					f := g + h
 

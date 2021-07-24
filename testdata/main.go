@@ -102,3 +102,28 @@ var EqualLengthCollidingSnakesRequest = GameRequest{
 	},
 	You: pavandubey,
 }
+
+var HazardBlockRequest = GameRequest{
+	Game: Game{
+		ID:      "93b1fg79-3c45-4ed1-b3f8-7ae236dc01c9",
+		Timeout: 500,
+	},
+	Turn: 0,
+	Board: Board{
+		Height: 11,
+		Width:  11,
+		Food: []Coord{
+			{X: 5, Y: 5},
+		},
+		Snakes: []Battlesnake{
+			threeLengthSnake,
+		},
+		Hazards: []Coord{
+			{X: 3, Y: 7},
+			{X: 4, Y: 7},
+			{X: 5, Y: 7},
+			{X: 6, Y: 7},
+		},
+	},
+	You: threeLengthSnake,
+}

@@ -19,10 +19,11 @@ type Game struct {
 }
 
 type Board struct {
-	Height int           `json:"height"`
-	Width  int           `json:"width"`
-	Food   []Coord       `json:"food"`
-	Snakes []Battlesnake `json:"snakes"`
+	Height  int           `json:"height"`
+	Width   int           `json:"width"`
+	Food    []Coord       `json:"food"`
+	Snakes  []Battlesnake `json:"snakes"`
+	Hazards []Coord       `json:"hazards"`
 }
 
 type GameRequest struct {
