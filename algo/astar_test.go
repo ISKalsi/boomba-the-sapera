@@ -3,6 +3,7 @@ package algo
 import (
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"github.com/ISKalsi/boomba-the-sapera/testdata"
+	"github.com/ISKalsi/boomba-the-sapera/testdata/head_on"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,7 +16,7 @@ func TestAStarSearch(t *testing.T) {
 }
 
 func TestBlockedDestinationAStarSearch(t *testing.T) {
-	gr := testdata.LoseCollidingSnakesRequest
+	gr := head_on.LoseCollidingSnakesRequest
 	a := Init(gr.Board, gr.You)
 	a.reset(gr.Board, gr.You)
 	assert.False(t, a.aStarSearch())

@@ -3,6 +3,7 @@ package algo
 import (
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"github.com/ISKalsi/boomba-the-sapera/testdata"
+	"github.com/ISKalsi/boomba-the-sapera/testdata/head_on"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -16,7 +17,7 @@ func TestHeadCollisions(t *testing.T) {
 	}{
 		{
 			"Win condition",
-			testdata.WinCollidingSnakesRequest,
+			head_on.WinCollidingSnakesRequest,
 			[]models.Coord{
 				{6, 6},
 				{6, 4},
@@ -26,7 +27,7 @@ func TestHeadCollisions(t *testing.T) {
 		},
 		{
 			"Lose condition",
-			testdata.LoseCollidingSnakesRequest,
+			head_on.LoseCollidingSnakesRequest,
 			[]models.Coord{
 				{6, 4},
 				{4, 4},
@@ -36,7 +37,7 @@ func TestHeadCollisions(t *testing.T) {
 		},
 		{
 			"Equal length condition",
-			testdata.EqualLengthCollidingSnakesRequest,
+			head_on.EqualLengthCollidingSnakesRequest,
 			[]models.Coord{
 				{6, 4},
 				{4, 4},
