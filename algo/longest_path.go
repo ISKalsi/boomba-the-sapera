@@ -1,5 +1,7 @@
 package algo
 
+import "github.com/ISKalsi/boomba-the-sapera/algo/cell"
+
 func (a *Algorithm) longestPath() bool {
 	if pathFound, _ := a.aStarSearch(); !pathFound {
 		return false
@@ -33,18 +35,20 @@ func (a *Algorithm) longestPath() bool {
 			nextTestCoord := next.Sum(testDir)
 
 			if !currentTestCoord.IsOutside(w, h) && !nextTestCoord.IsOutside(w, h) {
-				currentCell := cells[currentTestCoord]
-				nextCell := cells[nextTestCoord]
+				currentTestCell := cells[currentTestCoord]
+				nextTestCell := cells[nextTestCoord]
 
-				if currentCell.IsOkAndNotVisited() && nextCell.IsOkAndNotVisited() {
-					currentCell.IsVisited = true
-					nextCell.IsVisited = true
+				if currentTestCell.IsOkAndNotVisited() && nextTestCell.IsOkAndNotVisited() {
+					if currentTestCell.Weight != cell.WeightHazard && nextTestCell.Weight != cell.WeightHazard {
+						currentTestCell.IsVisited = true
+						nextTestCell.IsVisited = true
 
-					a.solvedPath = insert(a.solvedPath, index, currentTestCoord)
-					a.solvedPath = insert(a.solvedPath, index+1, nextTestCoord)
+						a.solvedPath = insert(a.solvedPath, index, currentTestCoord)
+						a.solvedPath = insert(a.solvedPath, index+1, nextTestCoord)
 
-					extended = true
-					break
+						extended = true
+						break
+					}
 				}
 			}
 		}
