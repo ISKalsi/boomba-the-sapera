@@ -31,8 +31,6 @@ func main() {
 	router := SetupRoutes()
 	port := getPort()
 
-	gin.New()
-
 	if e := router.Run(":" + port); e != nil {
 		log.Fatal(e)
 	}
