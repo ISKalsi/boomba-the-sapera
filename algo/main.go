@@ -17,6 +17,7 @@ type Algorithm struct {
 	isGoingToTail  bool
 	solvedPath     []models.Coord
 	head           models.Coord
+	health         float64
 	headCollisions possibleHeadCollisions
 }
 
@@ -26,6 +27,7 @@ func Init(b models.Board, s models.Battlesnake) *Algorithm {
 		start:          s.Head,
 		head:           s.Head,
 		destination:    s.Head.FindNearest(b.Food),
+		health:         float64(s.Health),
 		solvedPath:     make([]models.Coord, 0),
 		headCollisions: possibleHeadCollisions{coords: []models.Coord{}},
 	}
@@ -66,10 +68,10 @@ func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
 	a.board = b
 	a.start = s.Head
 	a.head = s.Head
+	a.health = float64(s.Health)
 	a.isGoingToTail = false
 	a.destination = s.Head.FindNearest(b.Food)
 	a.clearSolvedPath()
-	a.findPossibleLosingHeadCollisions(s)
 }
 
 func (a *Algorithm) getDirection(next models.Coord) string {
@@ -98,20 +100,23 @@ func (a *Algorithm) initGrid() grid.Grid {
 
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.reset(gr.Board, gr.You)
+	a.findPossibleLosingHeadCollisions(gr.You)
 
-	if a.aStarSearch() {
+	if pathFound, cost := a.aStarSearch(); pathFound {
 		shortestPathNextCoord := a.solvedPath[0]
 		g := a.initGrid()
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
 
 		ourSnakeIndex := 0
 		originalSnakeBody := gr.You.Body[:]
+		originalSnakeHealth := a.health
 
 		for i := range a.board.Snakes {
 			if a.board.Snakes[i].ID == gr.You.ID {
 				ourSnakeIndex = i
 				a.board.Snakes[i].Body = virtualSnake
 				a.board.Snakes[i].Head = virtualSnake[0]
+				a.health -= cost
 				break
 			}
 		}
@@ -120,11 +125,12 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
 		a.isGoingToTail = true
 
-		if a.longestPath() {
+		if found, _ := a.aStarSearch(); found {
 			return a.getDirection(shortestPathNextCoord)
 		} else {
 			a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
 			a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
+			a.health = originalSnakeHealth
 		}
 	}
 

@@ -1,7 +1,7 @@
 package algo
 
 func (a *Algorithm) longestPath() bool {
-	if pathFound := a.aStarSearch(); !pathFound {
+	if pathFound, _ := a.aStarSearch(); !pathFound {
 		return false
 	}
 

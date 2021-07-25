@@ -52,8 +52,7 @@ func TestHeadCollisions(t *testing.T) {
 			a := Init(gr.Board, gr.You)
 			assert.NotNil(t, a.headCollisions.coords)
 
-			a.reset(gr.Board, gr.You)
-
+			a.findPossibleLosingHeadCollisions(gr.You)
 			g := a.initGrid()
 
 			for _, c := range test.coordsToCheck {

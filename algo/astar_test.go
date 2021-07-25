@@ -11,15 +11,18 @@ import (
 func TestAStarSearch(t *testing.T) {
 	gr := testdata.StartGameRequest
 	a := Init(gr.Board, gr.You)
-	assert.True(t, a.aStarSearch())
+	pathFound, _ := a.aStarSearch()
+	assert.True(t, pathFound)
 	assert.True(t, len(a.solvedPath) != 0)
 }
 
 func TestBlockedDestinationAStarSearch(t *testing.T) {
 	gr := head_on.LoseCollidingSnakesRequest
 	a := Init(gr.Board, gr.You)
-	a.reset(gr.Board, gr.You)
-	assert.False(t, a.aStarSearch())
+	a.findPossibleLosingHeadCollisions(gr.You)
+
+	pathFound, _ := a.aStarSearch()
+	assert.False(t, pathFound)
 }
 
 func TestHazardBlockInBetweenAStarSearch(t *testing.T) {
@@ -37,6 +40,7 @@ func TestHazardBlockInBetweenAStarSearch(t *testing.T) {
 		{5, 5},
 	}
 
-	assert.True(t, a.aStarSearch())
+	pathFound, _ := a.aStarSearch()
+	assert.True(t, pathFound)
 	assert.Equal(t, expectedPath, a.solvedPath)
 }

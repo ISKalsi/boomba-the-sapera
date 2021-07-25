@@ -80,3 +80,12 @@ func TestNoPathToTailAndAvoidHazard(t *testing.T) {
 	expectedNextMove := parseMoveDirectionToString(RIGHT)
 	assert.Equal(t, expectedNextMove, actualNextMove)
 }
+
+func TestNextMove_OutOfHealthFromHazard(t *testing.T) {
+	gr := hazard_related.EdgeCaseRequest2
+	a := Init(gr.Board, gr.You)
+
+	actualNextMove := a.NextMove(&gr)
+	expectedNextMove := parseMoveDirectionToString(RIGHT)
+	assert.Equal(t, expectedNextMove, actualNextMove)
+}
