@@ -4,6 +4,7 @@ import (
 	"github.com/ISKalsi/boomba-the-sapera/algo/cell"
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
+	"math"
 )
 
 type PathSolver interface {
@@ -102,6 +103,8 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.reset(gr.Board, gr.You)
 	a.findPossibleLosingHeadCollisions(gr.You)
 
+	foodCoord := a.destination
+
 	if pathFound, _ := a.aStarSearch(); pathFound {
 		shortestPathNextCoord := a.solvedPath[0]
 		g := a.initGrid()
@@ -139,8 +142,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		return a.getDirection(a.solvedPath[0])
 	} else {
 		g := a.initGrid()
-		foodCoord := a.board.Food[0]
-		minF := -1.0
+		minF := math.Inf(1)
 		var maxDir models.Coord
 
 		for dir := range directionToIndex {
@@ -151,7 +153,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				continue
 			}
 
-			if minF == -1 && !g[test].IsBlocked {
+			if minF == math.Inf(1) && !g[test].IsBlocked {
 				minF = a.start.CalculateHeuristics(foodCoord) + g[test].Weight
 				maxDir = dir
 			} else if !g[test].IsOk() {
