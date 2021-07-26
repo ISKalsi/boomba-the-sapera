@@ -141,12 +141,16 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 			ourSnakeIndex := 0
 			originalSnakeBody := gr.You.Body[:]
+			originalSnakeHealth := a.health
 
 			for i := range a.board.Snakes {
 				if a.board.Snakes[i].ID == gr.You.ID {
 					ourSnakeIndex = i
 					a.board.Snakes[i].Body = virtualSnake
 					a.board.Snakes[i].Head = virtualSnake[0]
+					if g[foodCoord].Weight == cell.WeightHazard {
+						a.health -= 100 - cell.WeightHazard
+					}
 					break
 				}
 			}
@@ -160,6 +164,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			} else {
 				a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
 				a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
+				a.health = originalSnakeHealth
 			}
 		}
 
