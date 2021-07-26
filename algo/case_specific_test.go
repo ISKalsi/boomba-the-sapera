@@ -98,3 +98,12 @@ func TestNextMove_OutOfHealthFromHazardEdgeCase3(t *testing.T) {
 	expectedNextMove := parseMoveDirectionToString(RIGHT)
 	assert.Equal(t, expectedNextMove, actualNextMove)
 }
+
+func TestNextMove_OutOfHealthFromHazardEdgeCase4(t *testing.T) {
+	gr := hazard_related.EdgeCaseRequest4
+	a := Init(gr.Board, gr.You)
+
+	actualNextMove := a.NextMove(&gr)
+	notExpectedNextMove := parseMoveDirectionToString(LEFT)
+	assert.NotEqual(t, notExpectedNextMove, actualNextMove)
+}

@@ -5,6 +5,7 @@ import (
 	"github.com/ISKalsi/boomba-the-sapera/algo/grid"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"math"
+	"sort"
 )
 
 type PathSolver interface {
@@ -65,13 +66,37 @@ func (a *Algorithm) findPossibleLosingHeadCollisions(ourSnake models.Battlesnake
 	a.headCollisions.coords = dangerCoords
 }
 
+func (a *Algorithm) sortFoodByHeuristicFrom(head models.Coord) {
+	sort.Slice(a.board.Food, func(i, j int) bool {
+		h1 := a.board.Food[i].CalculateHeuristics(head)
+		h2 := a.board.Food[j].CalculateHeuristics(head)
+		return h1 < h2
+	})
+}
+
+func (a *Algorithm) findNearestPlausibleFood() (bool, models.Coord) {
+	a.sortFoodByHeuristicFrom(a.head)
+
+	heads := make([]models.Coord, len(a.board.Snakes))
+	for i, snake := range a.board.Snakes {
+		heads[i] = snake.Head
+	}
+
+	for _, foodCoord := range a.board.Food {
+		if head := foodCoord.FindNearest(heads); head == a.head {
+			return true, foodCoord
+		}
+	}
+
+	return false, a.board.Food[0]
+}
+
 func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
 	a.board = b
 	a.start = s.Head
 	a.head = s.Head
 	a.health = float64(s.Health)
 	a.isGoingToTail = false
-	a.destination = s.Head.FindNearest(b.Food)
 	a.clearSolvedPath()
 }
 
@@ -103,72 +128,78 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.reset(gr.Board, gr.You)
 	a.findPossibleLosingHeadCollisions(gr.You)
 
-	foodCoord := a.destination
+	pathFound := false
 
-	if pathFound, _ := a.aStarSearch(); pathFound {
-		shortestPathNextCoord := a.solvedPath[0]
-		g := a.initGrid()
-		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
+	nearestFoodFound, foodCoord := a.findNearestPlausibleFood()
+	a.destination = foodCoord
 
-		ourSnakeIndex := 0
-		originalSnakeBody := gr.You.Body[:]
+	if nearestFoodFound {
+		if pathFound, _ = a.aStarSearch(); pathFound {
+			shortestPathNextCoord := a.solvedPath[0]
+			g := a.initGrid()
+			virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
 
-		for i := range a.board.Snakes {
-			if a.board.Snakes[i].ID == gr.You.ID {
-				ourSnakeIndex = i
-				a.board.Snakes[i].Body = virtualSnake
-				a.board.Snakes[i].Head = virtualSnake[0]
-				break
+			ourSnakeIndex := 0
+			originalSnakeBody := gr.You.Body[:]
+
+			for i := range a.board.Snakes {
+				if a.board.Snakes[i].ID == gr.You.ID {
+					ourSnakeIndex = i
+					a.board.Snakes[i].Body = virtualSnake
+					a.board.Snakes[i].Head = virtualSnake[0]
+					break
+				}
+			}
+
+			a.SetNewStart(virtualSnake[0])
+			a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
+			a.isGoingToTail = true
+
+			if found, _ := a.aStarSearch(); found {
+				return a.getDirection(shortestPathNextCoord)
+			} else {
+				a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
+				a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
 			}
 		}
 
-		a.SetNewStart(virtualSnake[0])
-		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
+		a.SetNewStart(gr.You.Head)
+		a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
 		a.isGoingToTail = true
 
-		if found, _ := a.aStarSearch(); found {
-			return a.getDirection(shortestPathNextCoord)
-		} else {
-			a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
-			a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
+		if a.longestPath() {
+			return a.getDirection(a.solvedPath[0])
 		}
 	}
 
-	a.SetNewStart(gr.You.Head)
-	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-	a.isGoingToTail = true
+	g := a.initGrid()
+	minF := math.Inf(1)
+	var maxDir models.Coord
 
-	if a.longestPath() {
-		return a.getDirection(a.solvedPath[0])
-	} else {
-		g := a.initGrid()
-		minF := math.Inf(1)
-		var maxDir models.Coord
+	for dir := range directionToIndex {
+		test := gr.You.Head.Sum(dir)
 
-		for dir := range directionToIndex {
-			test := gr.You.Head.Sum(dir)
-
-			isOwnBody := gr.You.Body[1] == test
-			if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
-				continue
-			}
-
-			if minF == math.Inf(1) && !g[test].IsBlocked {
-				minF = a.start.CalculateHeuristics(foodCoord) + g[test].Weight
-				maxDir = dir
-			} else if !g[test].IsOk() {
-				continue
-			}
-
-			H := a.start.CalculateHeuristics(foodCoord)
-			G := g[test].Weight
-			F := G - H
-			if F < minF {
-				minF = F
-				maxDir = dir
-			}
+		isOwnBody := gr.You.Body[1] == test
+		if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
+			continue
 		}
 
-		return parseMoveDirectionToString(directionToIndex[maxDir])
+		if minF == math.Inf(1) && !g[test].IsBlocked {
+			minF = -gr.You.Head.CalculateHeuristics(foodCoord) + g[test].Weight
+			maxDir = dir
+			continue
+		} else if !g[test].IsOk() {
+			continue
+		}
+
+		H := gr.You.Head.CalculateHeuristics(foodCoord)
+		G := g[test].Weight
+		F := G - H
+		if F <= minF {
+			minF = F
+			maxDir = dir
+		}
 	}
+
+	return parseMoveDirectionToString(directionToIndex[maxDir])
 }

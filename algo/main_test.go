@@ -64,15 +64,9 @@ func TestHeadCollisions(t *testing.T) {
 }
 
 func TestFindNearestFood(t *testing.T) {
-	gr := testdata.StartGameRequest
-	a := Init(gr.Board, gr.You)
+	gr := testdata.ThreeLengthSnakeRequest
+	nearest := gr.You.Head.FindNearest(gr.Board.Food)
 
-	expectedNearest := models.Coord{X: 7, Y: 10}
-	assert.Equal(t, expectedNearest, a.destination)
-
-	gr = testdata.ThreeLengthSnakeRequest
-	a.reset(gr.Board, gr.You)
-
-	expectedNearest = models.Coord{X: 6, Y: 10}
-	assert.Equal(t, expectedNearest, a.destination)
+	expectedNearest := models.Coord{X: 6, Y: 10}
+	assert.Equal(t, expectedNearest, nearest)
 }
