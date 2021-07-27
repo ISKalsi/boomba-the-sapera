@@ -134,77 +134,79 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.destination = foodCoord
 
 	if nearestFoodFound {
-		if pathFound, _ = a.aStarSearch(); pathFound {
-			shortestPathNextCoord := a.solvedPath[0]
-			g := a.initGrid()
-			virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
+		pathFound, _ = a.aStarSearch()
+	}
 
-			ourSnakeIndex := 0
-			originalSnakeBody := gr.You.Body[:]
-			originalSnakeHealth := a.health
+	if pathFound {
+		shortestPathNextCoord := a.solvedPath[0]
+		g := a.initGrid()
+		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
 
-			for i := range a.board.Snakes {
-				if a.board.Snakes[i].ID == gr.You.ID {
-					ourSnakeIndex = i
-					a.board.Snakes[i].Body = virtualSnake
-					a.board.Snakes[i].Head = virtualSnake[0]
-					if g[foodCoord].Weight == cell.WeightHazard {
-						a.health -= 100 - cell.WeightHazard
-					}
-					break
+		ourSnakeIndex := 0
+		originalSnakeBody := gr.You.Body[:]
+		originalSnakeHealth := a.health
+
+		for i := range a.board.Snakes {
+			if a.board.Snakes[i].ID == gr.You.ID {
+				ourSnakeIndex = i
+				a.board.Snakes[i].Body = virtualSnake
+				a.board.Snakes[i].Head = virtualSnake[0]
+				if g[foodCoord].Weight == cell.WeightHazard {
+					a.health -= 100 - cell.WeightHazard
 				}
-			}
-
-			a.SetNewStart(virtualSnake[0])
-			a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
-			a.isGoingToTail = true
-
-			if found, _ := a.aStarSearch(); found {
-				return a.getDirection(shortestPathNextCoord)
-			} else {
-				a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
-				a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
-				a.health = originalSnakeHealth
+				break
 			}
 		}
 
-		a.SetNewStart(gr.You.Head)
-		a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+		a.SetNewStart(virtualSnake[0])
+		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
 		a.isGoingToTail = true
 
-		if a.longestPath() {
-			return a.getDirection(a.solvedPath[0])
+		if found, _ := a.aStarSearch(); found {
+			return a.getDirection(shortestPathNextCoord)
+		} else {
+			a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
+			a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
+			a.health = originalSnakeHealth
 		}
 	}
 
-	g := a.initGrid()
-	minF := math.Inf(1)
-	var maxDir models.Coord
+	a.SetNewStart(gr.You.Head)
+	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+	a.isGoingToTail = true
 
-	for dir := range directionToIndex {
-		test := gr.You.Head.Sum(dir)
+	if a.longestPath() {
+		return a.getDirection(a.solvedPath[0])
+	} else {
+		g := a.initGrid()
+		minF := math.Inf(1)
+		var maxDir models.Coord
 
-		isOwnBody := gr.You.Body[1] == test
-		if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
-			continue
+		for dir := range directionToIndex {
+			test := gr.You.Head.Sum(dir)
+
+			isOwnBody := gr.You.Body[1] == test
+			if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
+				continue
+			}
+
+			if minF == math.Inf(1) && !g[test].IsBlocked {
+				minF = -gr.You.Head.CalculateHeuristics(foodCoord) + g[test].Weight
+				maxDir = dir
+				continue
+			} else if !g[test].IsOk() {
+				continue
+			}
+
+			H := gr.You.Head.CalculateHeuristics(foodCoord)
+			G := g[test].Weight
+			F := G - H
+			if F <= minF {
+				minF = F
+				maxDir = dir
+			}
 		}
 
-		if minF == math.Inf(1) && !g[test].IsBlocked {
-			minF = -gr.You.Head.CalculateHeuristics(foodCoord) + g[test].Weight
-			maxDir = dir
-			continue
-		} else if !g[test].IsOk() {
-			continue
-		}
-
-		H := gr.You.Head.CalculateHeuristics(foodCoord)
-		G := g[test].Weight
-		F := G - H
-		if F <= minF {
-			minF = F
-			maxDir = dir
-		}
+		return parseMoveDirectionToString(directionToIndex[maxDir])
 	}
-
-	return parseMoveDirectionToString(directionToIndex[maxDir])
 }

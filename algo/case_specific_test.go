@@ -104,6 +104,6 @@ func TestNextMove_OutOfHealthFromHazardEdgeCase4(t *testing.T) {
 	a := Init(gr.Board, gr.You)
 
 	actualNextMove := a.NextMove(&gr)
-	notExpectedNextMove := parseMoveDirectionToString(LEFT)
+	notExpectedNextMove := parseMoveDirectionToString(UP)
 	assert.NotEqual(t, notExpectedNextMove, actualNextMove)
 }
