@@ -152,7 +152,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				a.board.Snakes[i].Body = virtualSnake
 				a.board.Snakes[i].Head = virtualSnake[0]
 				if g[foodCoord].Weight == cell.WeightHazard {
-					a.health -= 100 - cell.WeightHazard
+					a.health = 100 - cell.WeightHazard
 				}
 				break
 			}

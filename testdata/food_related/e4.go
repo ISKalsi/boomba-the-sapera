@@ -1,0 +1,102 @@
+package food_related
+
+import (
+	. "github.com/ISKalsi/boomba-the-sapera/models"
+	"github.com/ISKalsi/boomba-the-sapera/testdata"
+)
+
+var EdgeCaseRequest4 = GameRequest{
+	Game: Game{
+		ID:      "7f033f45-a44b-442e-b36b-72f067652bac",
+		Timeout: 500,
+	},
+	Turn: 127,
+	Board: Board{
+		Height: 11,
+		Width:  11,
+		Food: []Coord{
+			{X: 5, Y: 10},
+			{X: 9, Y: 9},
+			{X: 10, Y: 9},
+			{X: 0, Y: 2},
+		},
+		Hazards: append(testdata.CreateHazardCoordsFromRows(11, 0, 9, 10),
+			testdata.CreateHazardCoordsFromColumns(11, 0, 1, 10)...,
+		),
+		Snakes: []Battlesnake{
+			{
+				ID:     "3685499c-48cf-4228-8fe0-ae1433968b39",
+				Name:   "Pi-thon",
+				Health: 62,
+				Body: []Coord{
+					{X: 6, Y: 3},
+					{X: 6, Y: 4},
+					{X: 5, Y: 4},
+					{X: 5, Y: 3},
+					{X: 4, Y: 3},
+					{X: 3, Y: 3},
+					{X: 2, Y: 3},
+					{X: 1, Y: 3},
+					{X: 0, Y: 3},
+					{X: 0, Y: 4},
+					{X: 0, Y: 5},
+					{X: 1, Y: 5},
+					{X: 1, Y: 4},
+					{X: 2, Y: 4},
+					{X: 3, Y: 4},
+					{X: 3, Y: 5},
+					{X: 4, Y: 5},
+					{X: 5, Y: 5},
+					{X: 6, Y: 5},
+					{X: 7, Y: 5},
+					{X: 8, Y: 5},
+				},
+				Head:   Coord{X: 6, Y: 3},
+				Length: 21,
+				Shout:  "",
+			},
+			{
+				ID:     "1355499c-48cf-4228-8fe0-ae1433968b14",
+				Name:   "Boomba",
+				Health: 54,
+				Body: []Coord{
+					{X: 5, Y: 8},
+					{X: 4, Y: 8},
+					{X: 3, Y: 8},
+					{X: 3, Y: 7},
+					{X: 2, Y: 7},
+					{X: 2, Y: 6},
+					{X: 3, Y: 6},
+					{X: 4, Y: 6},
+					{X: 4, Y: 7},
+					{X: 5, Y: 7},
+					{X: 5, Y: 6},
+				},
+				Head:   Coord{X: 5, Y: 8},
+				Length: 11,
+				Shout:  "",
+			},
+		},
+	},
+	You: Battlesnake{
+		ID:     "1355499c-48cf-4228-8fe0-ae1433968b14",
+		Name:   "Boomba",
+		Health: 54,
+		Body: []Coord{
+			{X: 5, Y: 8},
+			{X: 4, Y: 8},
+			{X: 3, Y: 8},
+			{X: 3, Y: 7},
+			{X: 2, Y: 7},
+			{X: 2, Y: 6},
+			{X: 3, Y: 6},
+			{X: 4, Y: 6},
+			{X: 4, Y: 7},
+			{X: 5, Y: 7},
+			{X: 5, Y: 6},
+		},
+		Head:   Coord{X: 5, Y: 8},
+		Length: 11,
+		Shout:  "",
+	},
+}
