@@ -38,17 +38,24 @@ func (c Coord) Diff(c2 Coord) Coord {
 	}
 }
 
-func (c Coord) FindNearest(coords []Coord) Coord {
-	nearest := coords[0]
+func (c Coord) FindNearestCoordsFrom(coords []Coord) []Coord {
 	minH := c.CalculateHeuristics(coords[0])
+	distanceSlice := make([]float64, len(coords))
+	nearestCoords := make([]Coord, 0)
 
 	for i := range coords {
 		h := c.CalculateHeuristics(coords[i])
+		distanceSlice[i] = h
 		if h < minH {
-			nearest = coords[i]
 			minH = h
 		}
 	}
 
-	return nearest
+	for i := range distanceSlice {
+		if distanceSlice[i] == minH {
+			nearestCoords = append(nearestCoords, coords[i])
+		}
+	}
+
+	return nearestCoords
 }

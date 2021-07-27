@@ -28,7 +28,7 @@ func Init(b models.Board, s models.Battlesnake) *Algorithm {
 		board:          b,
 		start:          s.Head,
 		head:           s.Head,
-		destination:    s.Head.FindNearest(b.Food),
+		destination:    s.Head.FindNearestCoordsFrom(b.Food)[0],
 		health:         float64(s.Health),
 		solvedPath:     make([]models.Coord, 0),
 		headCollisions: possibleHeadCollisions{coords: []models.Coord{}},
@@ -83,7 +83,8 @@ func (a *Algorithm) findNearestPlausibleFood() (bool, models.Coord) {
 	}
 
 	for _, foodCoord := range a.board.Food {
-		if head := foodCoord.FindNearest(heads); head == a.head {
+		nearestHeads := foodCoord.FindNearestCoordsFrom(heads)
+		if len(nearestHeads) == 1 && nearestHeads[0] == a.head {
 			return true, foodCoord
 		}
 	}

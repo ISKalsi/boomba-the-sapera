@@ -3,6 +3,7 @@ package algo
 import (
 	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_itself"
 	"github.com/ISKalsi/boomba-the-sapera/testdata/collide_in_snake"
+	"github.com/ISKalsi/boomba-the-sapera/testdata/food_related"
 	"github.com/ISKalsi/boomba-the-sapera/testdata/hazard_related"
 	"github.com/ISKalsi/boomba-the-sapera/testdata/out_of_bounds"
 	"github.com/stretchr/testify/assert"
@@ -106,4 +107,22 @@ func TestNextMove_OutOfHealthFromHazardEdgeCase4(t *testing.T) {
 	actualNextMove := a.NextMove(&gr)
 	notExpectedNextMove := parseMoveDirectionToString(UP)
 	assert.NotEqual(t, notExpectedNextMove, actualNextMove)
+}
+
+func TestNextMove_NearestPlausibleFoodEdgeCase1(t *testing.T) {
+	gr := food_related.EdgeCaseRequest1
+	a := Init(gr.Board, gr.You)
+
+	actualNextMove := a.NextMove(&gr)
+	expectedNextMove := parseMoveDirectionToString(RIGHT)
+	assert.Equal(t, expectedNextMove, actualNextMove)
+}
+
+func TestNextMove_NearestPlausibleFoodEdgeCase2(t *testing.T) {
+	gr := food_related.EdgeCaseRequest2
+	a := Init(gr.Board, gr.You)
+
+	actualNextMove := a.NextMove(&gr)
+	expectedNextMove := parseMoveDirectionToString(UP)
+	assert.Equal(t, expectedNextMove, actualNextMove)
 }

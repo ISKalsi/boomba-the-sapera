@@ -45,7 +45,7 @@ func TestDiff(t *testing.T) {
 	assert.Equal(t, c, diff)
 }
 
-func TestFindNearest(t *testing.T) {
+func TestFindSingleNearest(t *testing.T) {
 	tests := []struct {
 		source  Coord
 		nearest Coord
@@ -65,7 +65,41 @@ func TestFindNearest(t *testing.T) {
 	for _, test := range tests {
 		name := "s: " + test.source.Str() + ", d: " + test.nearest.Str()
 		t.Run(name, func(t *testing.T) {
-			c := test.source.FindNearest(test.coords)
+			c := test.source.FindNearestCoordsFrom(test.coords)
+
+			assert.Equal(t, 1, len(c))
+			assert.Equal(t, test.nearest, c[0])
+		})
+	}
+}
+
+func TestFindMultipleNearest(t *testing.T) {
+	tests := []struct {
+		source  Coord
+		nearest []Coord
+		coords  []Coord
+	}{
+		{
+			Coord{3, 5},
+			[]Coord{
+				{1, 5},
+				{2, 4},
+			},
+			[]Coord{
+				{1, 5},
+				{1, 0},
+				{2, 4},
+				{-1, 3},
+				{7, 6},
+			},
+		},
+	}
+	for _, test := range tests {
+		name := "s: " + test.source.Str()
+		t.Run(name, func(t *testing.T) {
+			c := test.source.FindNearestCoordsFrom(test.coords)
+
+			assert.Equal(t, len(test.nearest), len(c))
 			assert.Equal(t, test.nearest, c)
 		})
 	}
