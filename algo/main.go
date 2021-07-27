@@ -160,6 +160,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 		a.SetNewStart(virtualSnake[0])
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
+		a.dontBlockTail = true
 
 		willEatFoodInNextTurn := false
 		if len(a.solvedPath) == 1 {
@@ -179,7 +180,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	a.SetNewStart(gr.You.Head)
 	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-	a.dontBlockTail = false
+	a.dontBlockTail = true
 
 	if a.longestPath() {
 		return a.getDirection(a.solvedPath[0])

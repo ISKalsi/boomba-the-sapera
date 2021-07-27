@@ -11,9 +11,10 @@ type Battlesnake struct {
 }
 
 func (b Battlesnake) GetBlockedCoords() []Coord {
-	if b.Health == 100 {
+	tailIndex := b.Length - 1
+	if b.Body[tailIndex] == b.Body[tailIndex-1] {
 		return b.Body
 	} else {
-		return b.Body[:b.Length-1]
+		return b.Body[:tailIndex]
 	}
 }
