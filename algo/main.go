@@ -169,7 +169,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		}
 
 		if found, _ := a.aStarSearch(); found {
-			if len(a.solvedPath) != 1 && !willEatFoodInNextTurn {
+			if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
 				return a.getDirection(shortestPathNextCoord)
 			}
 		}
