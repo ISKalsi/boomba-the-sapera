@@ -48,7 +48,7 @@ var EdgeCaseRequest6 = GameRequest{
 				Shout:  "",
 			},
 			{
-				ID:     "1",
+				ID:     "3",
 				Name:   "Boomba",
 				Health: 73,
 				Body: []Coord{
@@ -77,7 +77,7 @@ var EdgeCaseRequest6 = GameRequest{
 		},
 	},
 	You: Battlesnake{
-		ID:     "1",
+		ID:     "3",
 		Name:   "Boomba",
 		Health: 73,
 		Body: []Coord{

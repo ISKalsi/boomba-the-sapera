@@ -11,5 +11,5 @@ type Battlesnake struct {
 }
 
 func (b Battlesnake) GetBlockedCoords() []Coord {
-	return b.Body
+	return b.Body[:b.Length-1]
 }

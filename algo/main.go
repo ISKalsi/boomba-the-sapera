@@ -16,7 +16,6 @@ type Algorithm struct {
 	board          models.Board
 	start          models.Coord
 	destination    models.Coord
-	isGoingToTail  bool
 	solvedPath     []models.Coord
 	head           models.Coord
 	health         float64
@@ -97,7 +96,6 @@ func (a *Algorithm) reset(b models.Board, s models.Battlesnake) {
 	a.start = s.Head
 	a.head = s.Head
 	a.health = float64(s.Health)
-	a.isGoingToTail = false
 	a.clearSolvedPath()
 }
 
@@ -161,7 +159,6 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 		a.SetNewStart(virtualSnake[0])
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
-		a.isGoingToTail = true
 
 		willEatFoodInNextTurn := false
 		if len(a.solvedPath) == 1 {
@@ -181,7 +178,6 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	a.SetNewStart(gr.You.Head)
 	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-	a.isGoingToTail = true
 
 	if a.longestPath() {
 		return a.getDirection(a.solvedPath[0])

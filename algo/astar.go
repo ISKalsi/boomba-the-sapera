@@ -36,7 +36,7 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 
 func (a *Algorithm) aStarSearch() (bool, float64) {
 	cells := a.initGrid()
-	if !a.isGoingToTail && !cells[a.destination].IsOk() {
+	if !cells[a.destination].IsOk() {
 		return false, -1
 	}
 
