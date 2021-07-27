@@ -163,13 +163,20 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
 		a.isGoingToTail = true
 
-		if found, _ := a.aStarSearch(); found {
-			return a.getDirection(shortestPathNextCoord)
-		} else {
-			a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
-			a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
-			a.health = originalSnakeHealth
+		willEatFoodInNextTurn := false
+		if len(a.solvedPath) == 1 {
+			willEatFoodInNextTurn = true
 		}
+
+		if found, _ := a.aStarSearch(); found {
+			if len(a.solvedPath) != 1 && !willEatFoodInNextTurn {
+				return a.getDirection(shortestPathNextCoord)
+			}
+		}
+
+		a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
+		a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
+		a.health = originalSnakeHealth
 	}
 
 	a.SetNewStart(gr.You.Head)
