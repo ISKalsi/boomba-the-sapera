@@ -36,7 +36,8 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 
 func (a *Algorithm) aStarSearch() (bool, float64) {
 	cells := a.initGrid()
-	if !cells[a.destination].IsOk() {
+	if !a.dontBlockTail && !cells[a.destination].IsOk() {
+		a.dontBlockTail = false
 		return false, -1
 	}
 
@@ -55,6 +56,7 @@ func (a *Algorithm) aStarSearch() (bool, float64) {
 					neighborCell.ParentCoord = currentCell.Coord
 					g := currentCell.G + neighborCell.Weight
 
+					a.dontBlockTail = false
 					if g < a.health {
 						a.tracePath(cells)
 						return true, g
@@ -76,5 +78,6 @@ func (a *Algorithm) aStarSearch() (bool, float64) {
 		}
 	}
 
+	a.dontBlockTail = false
 	return false, -1
 }
