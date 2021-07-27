@@ -199,14 +199,14 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			}
 
 			if minF == math.Inf(1) && !g[test].IsBlocked {
-				minF = -gr.You.Head.CalculateHeuristics(foodCoord) + g[test].Weight
+				minF = -g[test].CalculateHeuristics(foodCoord) + g[test].Weight
 				maxDir = dir
 				continue
 			} else if !g[test].IsOk() {
 				continue
 			}
 
-			H := gr.You.Head.CalculateHeuristics(foodCoord)
+			H := g[test].CalculateHeuristics(foodCoord)
 			G := g[test].Weight
 			F := G - H
 			if F <= minF {
