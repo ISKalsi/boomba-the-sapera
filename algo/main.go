@@ -179,7 +179,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	a.SetNewStart(gr.You.Head)
 	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-	a.dontBlockTail = true
+	a.dontBlockTail = false
 
 	if a.longestPath() {
 		return a.getDirection(a.solvedPath[0])
