@@ -1,8 +1,8 @@
-package hazard_related
+package testdata
 
 import "github.com/ISKalsi/boomba-the-sapera/models"
 
-func createHazardCoordsFromRows(width int, rows ...int) []models.Coord {
+func CreateHazardCoordsFromRows(width int, rows ...int) []models.Coord {
 	hazards := make([]models.Coord, len(rows)*width)
 	for i, row := range rows {
 		for j := 0; j < width; j++ {
@@ -13,7 +13,7 @@ func createHazardCoordsFromRows(width int, rows ...int) []models.Coord {
 	return hazards
 }
 
-func createHazardCoordsFromColumns(height int, cols ...int) []models.Coord {
+func CreateHazardCoordsFromColumns(height int, cols ...int) []models.Coord {
 	hazards := make([]models.Coord, len(cols)*height)
 	for i, col := range cols {
 		for j := 0; j < height; j++ {

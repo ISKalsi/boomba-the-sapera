@@ -1,6 +1,9 @@
 package hazard_related
 
-import . "github.com/ISKalsi/boomba-the-sapera/models"
+import (
+	. "github.com/ISKalsi/boomba-the-sapera/models"
+	"github.com/ISKalsi/boomba-the-sapera/testdata"
+)
 
 var EdgeCaseRequest4 = GameRequest{
 	Game: Game{
@@ -56,8 +59,8 @@ var EdgeCaseRequest4 = GameRequest{
 			},
 		},
 		Hazards: append(
-			createHazardCoordsFromColumns(11, 0),
-			createHazardCoordsFromRows(11, 10)...,
+			testdata.CreateHazardCoordsFromColumns(11, 0),
+			testdata.CreateHazardCoordsFromRows(11, 10)...,
 		),
 	},
 	You: Battlesnake{

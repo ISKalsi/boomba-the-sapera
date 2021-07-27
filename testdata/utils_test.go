@@ -1,4 +1,4 @@
-package hazard_related
+package testdata
 
 import (
 	"github.com/ISKalsi/boomba-the-sapera/models"
@@ -18,7 +18,7 @@ func TestHazardFromRow(t *testing.T) {
 		{3, 2},
 	}
 
-	actual := createHazardCoordsFromRows(4, 0, 2)
+	actual := CreateHazardCoordsFromRows(4, 0, 2)
 
 	assert.Equal(t, expected, actual)
 }
@@ -35,7 +35,7 @@ func TestHazardFromColumn(t *testing.T) {
 		{2, 3},
 	}
 
-	actual := createHazardCoordsFromColumns(4, 0, 2)
+	actual := CreateHazardCoordsFromColumns(4, 0, 2)
 
 	assert.Equal(t, expected, actual)
 }
