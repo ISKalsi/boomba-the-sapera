@@ -5,7 +5,7 @@ import (
 	"github.com/ISKalsi/boomba-the-sapera/testdata"
 )
 
-var EdgeCaseRequest3 = GameRequest{
+var _ = GameRequest{
 	Game: Game{
 		ID:      "29f71397-08f7-4a92-a2cd-73ec48a95077",
 		Timeout: 500,
