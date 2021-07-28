@@ -183,38 +183,60 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
 	a.dontBlockTail = true
 
-	if found, _ := a.aStarSearch(); found {
-		return a.getDirection(a.solvedPath[0])
-	} else {
-		g := a.initGrid()
-		minF := math.Inf(1)
-		var maxDir models.Coord
+	pathFoundIsTooCostly := false
+	if pathFound, pathCost = a.aStarSearch(); pathFound {
+		if pathCost >= 15 && len(a.solvedPath) < 15 {
+			pathFoundIsTooCostly = true
+		} else {
+			return a.getDirection(a.solvedPath[0])
+		}
+	}
 
-		for dir := range directionToIndex {
-			test := gr.You.Head.Sum(dir)
-
-			isOwnBody := gr.You.Body[1] == test
-			if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
-				continue
-			}
-
-			if minF == math.Inf(1) && !g[test].IsBlocked {
-				minF = -g[test].CalculateHeuristics(foodCoord) + g[test].Weight
-				maxDir = dir
-				continue
-			} else if !g[test].IsOk() {
-				continue
-			}
-
-			H := g[test].CalculateHeuristics(foodCoord)
-			G := g[test].Weight
-			F := G - H
-			if F <= minF {
-				minF = F
-				maxDir = dir
+	var avoidCoord models.Coord
+	if pathFoundIsTooCostly {
+		notFoundAvoidCoord := true
+		for _, snake := range a.board.Snakes {
+			if snake.Length > gr.You.Length {
+				avoidCoord = snake.Head
+				notFoundAvoidCoord = false
+				break
 			}
 		}
-
-		return parseMoveDirectionToString(directionToIndex[maxDir])
+		if notFoundAvoidCoord {
+			avoidCoord = gr.You.Body[gr.You.Length-1]
+		}
+	} else {
+		avoidCoord = foodCoord
 	}
+
+	g := a.initGrid()
+	minF := math.Inf(1)
+	var maxDir models.Coord
+
+	for dir := range directionToIndex {
+		test := gr.You.Head.Sum(dir)
+
+		isOwnBody := gr.You.Body[1] == test
+		if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
+			continue
+		}
+
+		if minF == math.Inf(1) && !g[test].IsBlocked {
+			minF = -g[test].CalculateHeuristics(avoidCoord) + g[test].Weight
+			maxDir = dir
+			continue
+		} else if !g[test].IsOk() {
+			continue
+		}
+
+		H := g[test].CalculateHeuristics(avoidCoord)
+		G := g[test].Weight
+		F := G - H
+		if F <= minF {
+			minF = F
+			maxDir = dir
+		}
+	}
+
+	return parseMoveDirectionToString(directionToIndex[maxDir])
 }
