@@ -15,10 +15,9 @@ var EdgeCaseRequest5 = GameRequest{
 		Height: 11,
 		Width:  11,
 		Food: []Coord{
-			{X: 5, Y: 10},
-			{X: 9, Y: 9},
-			{X: 10, Y: 9},
-			{X: 0, Y: 2},
+			{X: 6, Y: 9},
+			{X: 10, Y: 0},
+			{X: 10, Y: 2},
 		},
 		Hazards: testdata.CreateHazardCoordsFromRows(11, 8, 9, 10),
 		Snakes: []Battlesnake{

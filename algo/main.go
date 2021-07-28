@@ -124,6 +124,26 @@ func (a *Algorithm) initGrid() grid.Grid {
 	return g
 }
 
+func (a *Algorithm) getTrappedScore(g grid.Grid, gr *models.GameRequest) int {
+	trappedScore := 0
+	for dir := range directionToIndex {
+		test := gr.You.Head.Sum(dir)
+
+		if isOwnBody := gr.You.Body[1] == test; isOwnBody {
+			continue
+		}
+
+		if test.IsOutside(a.board.Width, a.board.Height) {
+			trappedScore += 1
+		} else if g[test].Weight == cell.WeightHazard {
+			trappedScore += 1
+		} else if g[test].IsBlocked {
+			trappedScore += 1
+		}
+	}
+	return trappedScore
+}
+
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.reset(gr.Board, gr.You)
 	a.findPossibleLosingHeadCollisions(gr.You)
@@ -169,26 +189,9 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		}
 
 		if pathFound, pathCost = a.aStarSearch(); pathFound {
-			if a.health-pathCost < 35 {
-				if a.health <= 30 {
-					trappedScore := 0
-					for dir := range directionToIndex {
-						test := gr.You.Head.Sum(dir)
-
-						if isOwnBody := gr.You.Body[1] == test; isOwnBody {
-							continue
-						}
-
-						if test.IsOutside(a.board.Width, a.board.Height) {
-							trappedScore += 1
-						} else if g[test].Weight == cell.WeightHazard {
-							trappedScore += 1
-						} else if g[test].IsBlocked {
-							trappedScore += 1
-						}
-					}
-
-					if trappedScore > 1 {
+			if originalSnakeHealth-pathCost < 35 {
+				if originalSnakeHealth <= 30 {
+					if trappedScore := a.getTrappedScore(g, gr); trappedScore > 1 {
 						return a.getDirection(shortestPathNextCoord)
 					}
 				}
