@@ -209,6 +209,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	g = a.initGrid()
 	bodyPartsInHazard := 0
+	isHeadInHazard := g[gr.You.Head].Weight == cell.WeightHazard
 	for _, c := range gr.You.Body {
 		if g[c].Weight == cell.WeightHazard {
 			bodyPartsInHazard += 1
@@ -216,7 +217,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	}
 
 	pathFoundIsTooCostly := false
-	if bodyPartsInHazard == 0 {
+	if bodyPartsInHazard == 0 || isHeadInHazard {
 		bigSnakesAround := false
 		collisionPosibility := false
 
