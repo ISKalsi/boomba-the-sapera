@@ -129,15 +129,16 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.findPossibleLosingHeadCollisions(gr.You)
 
 	pathFound := false
+	pathCost := 100.0
 
 	nearestFoodFound, foodCoord := a.findNearestPlausibleFood()
 	a.destination = foodCoord
 
 	if nearestFoodFound {
-		pathFound, _ = a.aStarSearch()
+		pathFound, pathCost = a.aStarSearch()
 	}
 
-	if pathFound {
+	if pathFound && pathCost < 31 {
 		shortestPathNextCoord := a.solvedPath[0]
 		g := a.initGrid()
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
@@ -167,7 +168,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			willEatFoodInNextTurn = true
 		}
 
-		if found, _ := a.aStarSearch(); found {
+		if found, cost := a.aStarSearch(); found && cost < 51 {
 			if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
 				return a.getDirection(shortestPathNextCoord)
 			}
