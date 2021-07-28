@@ -138,7 +138,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		pathFound, pathCost = a.aStarSearch()
 	}
 
-	if pathFound && pathCost < 31 {
+	if pathFound {
 		shortestPathNextCoord := a.solvedPath[0]
 		g := a.initGrid()
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
@@ -168,7 +168,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			willEatFoodInNextTurn = true
 		}
 
-		if found, cost := a.aStarSearch(); found && cost < 51 {
+		if pathFound, pathCost = a.aStarSearch(); pathFound && a.health-pathCost > 35 {
 			if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
 				return a.getDirection(shortestPathNextCoord)
 			}
@@ -185,7 +185,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	pathFoundIsTooCostly := false
 	if pathFound, pathCost = a.aStarSearch(); pathFound {
-		if pathCost >= 15 && len(a.solvedPath) < 15 {
+		if pathCost >= 45 && len(a.solvedPath) < 5 {
 			pathFoundIsTooCostly = true
 		} else {
 			return a.getDirection(a.solvedPath[0])
@@ -193,8 +193,9 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	}
 
 	var avoidCoord models.Coord
+	notFoundAvoidCoord := true
+
 	if pathFoundIsTooCostly {
-		notFoundAvoidCoord := true
 		for _, snake := range a.board.Snakes {
 			if snake.Length > gr.You.Length {
 				avoidCoord = snake.Head
@@ -202,10 +203,11 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				break
 			}
 		}
-		if notFoundAvoidCoord {
-			avoidCoord = gr.You.Body[gr.You.Length-1]
-		}
 	} else {
+		avoidCoord = foodCoord
+	}
+
+	if notFoundAvoidCoord {
 		avoidCoord = foodCoord
 	}
 
