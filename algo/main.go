@@ -184,10 +184,37 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.dontBlockTail = true
 
 	pathFoundIsTooCostly := false
-	if pathFound, pathCost = a.aStarSearch(); pathFound {
-		if pathCost >= 45 && len(a.solvedPath) < 5 {
-			pathFoundIsTooCostly = true
-		} else {
+	bigSnakesAround := false
+	collisionPosibility := false
+	for _, snake := range a.board.Snakes {
+		if snake.Length > gr.You.Length {
+			if h := snake.Head.CalculateHeuristics(gr.You.Head); h < 4 {
+				if pathFound, pathCost = a.aStarSearch(); pathFound {
+					if pathCost >= 45 && len(a.solvedPath) < 5 {
+						pathFoundIsTooCostly = true
+					} else {
+						return a.getDirection(a.solvedPath[0])
+					}
+				}
+				collisionPosibility = true
+			}
+			bigSnakesAround = true
+		}
+	}
+
+	if !bigSnakesAround {
+		for _, snake := range a.board.Snakes {
+			if snake.ID != gr.You.ID {
+				a.SetNewDestination(snake.Head)
+				if pathFound, pathCost = a.aStarSearch(); pathFound {
+					return a.getDirection(a.solvedPath[0])
+				}
+			}
+		}
+	}
+
+	if !collisionPosibility {
+		if pathFound, pathCost = a.longestPath(); pathFound {
 			return a.getDirection(a.solvedPath[0])
 		}
 	}

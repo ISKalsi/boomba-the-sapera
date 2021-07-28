@@ -9,5 +9,6 @@ import (
 func TestLongestPath(t *testing.T) {
 	gr := testdata.ThreeLengthSnakeRequest
 	a := Init(gr.Board, gr.You)
-	assert.Equal(t, true, a.longestPath())
+	found, _ := a.longestPath()
+	assert.Equal(t, true, found)
 }

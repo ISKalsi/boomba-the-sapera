@@ -2,9 +2,12 @@ package algo
 
 import "github.com/ISKalsi/boomba-the-sapera/algo/cell"
 
-func (a *Algorithm) longestPath() bool {
-	if pathFound, _ := a.aStarSearch(); !pathFound {
-		return false
+func (a *Algorithm) longestPath() (bool, float64) {
+	pathFound := false
+	pathCost := 0.0
+
+	if pathFound, pathCost = a.aStarSearch(); !pathFound {
+		return false, -1
 	}
 
 	cells := a.initGrid()
@@ -16,7 +19,7 @@ func (a *Algorithm) longestPath() bool {
 	index, current := 0, a.head
 	w := a.board.Width
 	h := a.board.Height
-	for {
+	for pathCost+2 < a.health {
 		dirToNext := a.solvedPath[index].Diff(current)
 		next := a.solvedPath[index]
 
@@ -46,6 +49,9 @@ func (a *Algorithm) longestPath() bool {
 						a.solvedPath = insert(a.solvedPath, index, currentTestCoord)
 						a.solvedPath = insert(a.solvedPath, index+1, nextTestCoord)
 
+						pathCost += currentTestCell.Weight
+						pathCost += nextTestCell.Weight
+
 						extended = true
 						break
 					}
@@ -62,5 +68,5 @@ func (a *Algorithm) longestPath() bool {
 		}
 	}
 
-	return true
+	return true, pathCost
 }
