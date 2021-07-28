@@ -183,7 +183,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
 	a.dontBlockTail = true
 
-	if a.longestPath() {
+	if found, _ := a.aStarSearch(); found {
 		return a.getDirection(a.solvedPath[0])
 	} else {
 		g := a.initGrid()
