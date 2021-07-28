@@ -13,14 +13,14 @@ type PathSolver interface {
 }
 
 type Algorithm struct {
-	board          models.Board
-	start          models.Coord
-	destination    models.Coord
-	solvedPath     []models.Coord
-	head           models.Coord
-	health         float64
-	dontBlockTail  bool
-	headCollisions possibleHeadCollisions
+	board               models.Board
+	start               models.Coord
+	destination         models.Coord
+	solvedPath          []models.Coord
+	head                models.Coord
+	health              float64
+	dontBlockTailOrHead bool
+	headCollisions      possibleHeadCollisions
 }
 
 func Init(b models.Board, s models.Battlesnake) *Algorithm {
@@ -181,7 +181,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 		a.SetNewStart(virtualSnake[0])
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
-		a.dontBlockTail = true
+		a.dontBlockTailOrHead = true
 
 		willEatFoodInNextTurn := false
 		if len(a.solvedPath) == 1 {
@@ -223,7 +223,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 		a.SetNewStart(gr.You.Head)
 		a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-		a.dontBlockTail = true
+		a.dontBlockTailOrHead = true
 
 		for _, snake := range a.board.Snakes {
 			if snake.ID != gr.You.ID && snake.Length >= gr.You.Length {
@@ -246,20 +246,91 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			}
 		}
 
-		if !bigSnakesAround {
-			for _, snake := range a.board.Snakes {
+		if !bigSnakesAround && len(a.board.Snakes) != 1 {
+			minH := math.Inf(1)
+			var nearestSnake models.Battlesnake
+			var nearestSnakeIndex int
+			for i, snake := range a.board.Snakes {
 				if snake.ID != gr.You.ID {
-					a.SetNewDestination(snake.Head)
-					if pathFound, pathCost = a.aStarSearch(); pathFound {
-						return a.getDirection(a.solvedPath[0])
+					if h := gr.You.Head.CalculateHeuristics(snake.Head); minH > h {
+						minH = h
+						nearestSnake = snake
+						nearestSnakeIndex = i
 					}
 				}
+			}
+
+			a.SetNewStart(gr.You.Head)
+			a.SetNewDestination(nearestSnake.Head)
+			if pathFound, pathCost = a.aStarSearch(); pathFound {
+				shortestPathNextCoord := a.solvedPath[0]
+				virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath[:1])
+
+				ourSnakeIndex := 0
+				originalSnakeBody := gr.You.Body[:]
+				originalSnakeHealth := a.health
+
+				for i := range a.board.Snakes {
+					if a.board.Snakes[i].ID == gr.You.ID {
+						ourSnakeIndex = i
+						a.board.Snakes[i].Body = virtualSnake
+						a.board.Snakes[i].Head = virtualSnake[0]
+						a.health -= pathCost
+						break
+					}
+				}
+
+				willBeOkay := true
+				a.SetNewStart(virtualSnake[0])
+
+				originalNearestSnakeBody := nearestSnake.Body[:]
+				a.health -= 1
+
+				for dir := range directionToIndex {
+					test := nearestSnake.Head.Sum(dir)
+
+					isOwnBody := nearestSnake.Body[1] == test
+					if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) || !g[test].IsOk() {
+						continue
+					}
+
+					testVirtualSnake := g.MoveVirtualSnakeAlongPath(nearestSnake.Body, []models.Coord{test})
+					a.board.Snakes[nearestSnakeIndex].Body = testVirtualSnake
+					a.board.Snakes[nearestSnakeIndex].Head = testVirtualSnake[0]
+
+					a.SetNewDestination(test)
+					a.dontBlockTailOrHead = true
+					pathFound, pathCost = a.aStarSearch()
+					if !pathFound || g[a.solvedPath[0]].Weight == cell.WeightHazard {
+						willBeOkay = false
+						break
+					}
+				}
+
+				a.board.Snakes[nearestSnakeIndex].Body = originalNearestSnakeBody
+				a.board.Snakes[nearestSnakeIndex].Head = originalNearestSnakeBody[0]
+				a.health += 1
+
+				if willBeOkay {
+					return a.getDirection(shortestPathNextCoord)
+				}
+
+				a.board.Snakes[ourSnakeIndex].Body = originalSnakeBody
+				a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
+				a.health = originalSnakeHealth
 			}
 		}
 
 		if !collisionPosibility {
+			a.SetNewStart(gr.You.Head)
+			a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+			a.dontBlockTailOrHead = true
 			if pathFound, pathCost = a.longestPath(); pathFound {
-				return a.getDirection(a.solvedPath[0])
+				tailIndex := gr.You.Length - 1
+				justHadFood := gr.You.Body[tailIndex] == gr.You.Body[tailIndex-1]
+				if len(a.solvedPath) != 1 || !justHadFood {
+					return a.getDirection(a.solvedPath[0])
+				}
 			}
 		}
 	}

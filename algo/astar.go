@@ -35,8 +35,8 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 }
 
 func (a *Algorithm) resetBlockTailFlag() {
-	if a.dontBlockTail {
-		a.dontBlockTail = false
+	if a.dontBlockTailOrHead {
+		a.dontBlockTailOrHead = false
 	}
 }
 
@@ -48,7 +48,7 @@ func (a *Algorithm) aStarSearch() (bool, float64) {
 	}
 
 	cells := a.initGrid()
-	if !a.dontBlockTail && !cells[a.destination].IsOk() {
+	if !a.dontBlockTailOrHead && !cells[a.destination].IsOk() {
 		return false, -1
 	}
 

@@ -7,7 +7,7 @@ import (
 
 var EdgeCaseRequest5 = GameRequest{
 	Game: Game{
-		ID:      "30f24d94-9ebe-4798-a75b-dd450af6d6ed",
+		ID:      "01ff7fe7-9e2f-4c48-974d-2313f17971e6",
 		Timeout: 500,
 	},
 	Turn: 106,
