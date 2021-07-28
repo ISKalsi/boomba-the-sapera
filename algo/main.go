@@ -213,10 +213,14 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		if snake.Length > gr.You.Length {
 			if h := snake.Head.CalculateHeuristics(gr.You.Head); h < 4 {
 				if pathFound, pathCost = a.aStarSearch(); pathFound {
-					if pathCost >= 45 && len(a.solvedPath) < 5 {
+					pathLen := len(a.solvedPath)
+					if pathCost >= 45 && pathLen < 5 {
 						pathFoundIsTooCostly = true
 					} else {
-						return a.getDirection(a.solvedPath[0])
+						tailIndex := gr.You.Length - 1
+						if pathLen != 1 || gr.You.Body[tailIndex] != gr.You.Body[tailIndex-1] {
+							return a.getDirection(a.solvedPath[0])
+						}
 					}
 				}
 				collisionPosibility = true
