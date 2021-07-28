@@ -147,6 +147,7 @@ func (a *Algorithm) getTrappedScore(g grid.Grid, gr *models.GameRequest) int {
 func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	a.reset(gr.Board, gr.You)
 	a.findPossibleLosingHeadCollisions(gr.You)
+	g := a.initGrid()
 
 	pathFound := false
 	pathCost := 100.0
@@ -160,7 +161,6 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	if pathFound {
 		shortestPathNextCoord := a.solvedPath[0]
-		g := a.initGrid()
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
 
 		ourSnakeIndex := 0
@@ -195,7 +195,9 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 						return a.getDirection(shortestPathNextCoord)
 					}
 				}
-			} else if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
+			}
+
+			if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
 				return a.getDirection(shortestPathNextCoord)
 			}
 		}
@@ -205,47 +207,59 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		a.health = originalSnakeHealth
 	}
 
-	a.SetNewStart(gr.You.Head)
-	a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-	a.dontBlockTail = true
+	g = a.initGrid()
+	bodyPartsInHazard := 0
+	for _, c := range gr.You.Body {
+		if g[c].Weight == cell.WeightHazard {
+			bodyPartsInHazard += 1
+		}
+	}
 
 	pathFoundIsTooCostly := false
-	bigSnakesAround := false
-	collisionPosibility := false
-	for _, snake := range a.board.Snakes {
-		if snake.Length > gr.You.Length {
-			if h := snake.Head.CalculateHeuristics(gr.You.Head); h < 4 {
-				if pathFound, pathCost = a.aStarSearch(); pathFound {
-					pathLen := len(a.solvedPath)
-					if pathCost >= 45 && pathLen < 5 {
-						pathFoundIsTooCostly = true
-					} else {
-						tailIndex := gr.You.Length - 1
-						if pathLen != 1 || gr.You.Body[tailIndex] != gr.You.Body[tailIndex-1] {
-							return a.getDirection(a.solvedPath[0])
+	if bodyPartsInHazard == 0 {
+		bigSnakesAround := false
+		collisionPosibility := false
+
+		a.SetNewStart(gr.You.Head)
+		a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+		a.dontBlockTail = true
+
+		for _, snake := range a.board.Snakes {
+			if snake.ID != gr.You.ID && snake.Length >= gr.You.Length {
+				if h := snake.Head.CalculateHeuristics(gr.You.Head); h < 6 {
+					if pathFound, pathCost = a.aStarSearch(); pathFound {
+						pathLen := len(a.solvedPath)
+						if pathCost >= 45 && pathLen < 5 {
+							pathFoundIsTooCostly = true
+						} else {
+							tailIndex := gr.You.Length - 1
+							justHadFood := gr.You.Body[tailIndex] == gr.You.Body[tailIndex-1]
+							if pathLen != 1 || !justHadFood {
+								return a.getDirection(a.solvedPath[0])
+							}
 						}
 					}
+					collisionPosibility = true
 				}
-				collisionPosibility = true
-			}
-			bigSnakesAround = true
-		}
-	}
-
-	if !bigSnakesAround {
-		for _, snake := range a.board.Snakes {
-			if snake.ID != gr.You.ID {
-				a.SetNewDestination(snake.Head)
-				if pathFound, pathCost = a.aStarSearch(); pathFound {
-					return a.getDirection(a.solvedPath[0])
-				}
+				bigSnakesAround = true
 			}
 		}
-	}
 
-	if !collisionPosibility {
-		if pathFound, pathCost = a.longestPath(); pathFound {
-			return a.getDirection(a.solvedPath[0])
+		if !bigSnakesAround {
+			for _, snake := range a.board.Snakes {
+				if snake.ID != gr.You.ID {
+					a.SetNewDestination(snake.Head)
+					if pathFound, pathCost = a.aStarSearch(); pathFound {
+						return a.getDirection(a.solvedPath[0])
+					}
+				}
+			}
+		}
+
+		if !collisionPosibility {
+			if pathFound, pathCost = a.longestPath(); pathFound {
+				return a.getDirection(a.solvedPath[0])
+			}
 		}
 	}
 
@@ -268,7 +282,6 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		avoidCoord = foodCoord
 	}
 
-	g := a.initGrid()
 	minF := math.Inf(1)
 	var maxDir models.Coord
 
