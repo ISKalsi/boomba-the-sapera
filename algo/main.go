@@ -168,8 +168,31 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			willEatFoodInNextTurn = true
 		}
 
-		if pathFound, pathCost = a.aStarSearch(); pathFound && a.health-pathCost > 35 {
-			if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
+		if pathFound, pathCost = a.aStarSearch(); pathFound {
+			if a.health-pathCost < 35 {
+				if a.health <= 30 {
+					trappedScore := 0
+					for dir := range directionToIndex {
+						test := gr.You.Head.Sum(dir)
+
+						if isOwnBody := gr.You.Body[1] == test; isOwnBody {
+							continue
+						}
+
+						if test.IsOutside(a.board.Width, a.board.Height) {
+							trappedScore += 1
+						} else if g[test].Weight == cell.WeightHazard {
+							trappedScore += 1
+						} else if g[test].IsBlocked {
+							trappedScore += 1
+						}
+					}
+
+					if trappedScore > 1 {
+						return a.getDirection(shortestPathNextCoord)
+					}
+				}
+			} else if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
 				return a.getDirection(shortestPathNextCoord)
 			}
 		}

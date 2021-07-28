@@ -162,3 +162,12 @@ func TestNextMove_NearestPlausibleFoodEdgeCase4(t *testing.T) {
 	expectedNextMove := parseMoveDirectionToString(UP)
 	assert.Equal(t, expectedNextMove, actualNextMove)
 }
+
+func TestNextMove_NearestPlausibleFoodEdgeCase5(t *testing.T) {
+	gr := food_related.EdgeCaseRequest5
+	a := Init(gr.Board, gr.You)
+
+	actualNextMove := a.NextMove(&gr)
+	expectedNextMove := parseMoveDirectionToString(LEFT)
+	assert.Equal(t, expectedNextMove, actualNextMove)
+}
