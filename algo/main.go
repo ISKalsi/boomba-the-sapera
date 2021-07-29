@@ -21,6 +21,7 @@ type Algorithm struct {
 	health              float64
 	dontBlockTailOrHead bool
 	dontConsiderCost    bool
+	ignoreUnsureBlocks  bool
 	headCollisions      possibleHeadCollisions
 }
 
@@ -383,6 +384,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			a.SetNewStart(test)
 			a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
 			a.dontBlockTailOrHead = true
+			a.ignoreUnsureBlocks = true
 			if pathFound, _ = a.aStarSearch(); pathFound {
 				tailIndex := gr.You.Length - 1
 				justHadFood := gr.You.Body[tailIndex] == gr.You.Body[tailIndex-1]
@@ -395,6 +397,8 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	}
 
 	if minF == math.Inf(1) {
+		minF = math.Inf(-1)
+		cost := math.Inf(1)
 		for dir := range directionToIndex {
 			test := gr.You.Head.Sum(dir)
 
@@ -410,12 +414,18 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			H := g[test].CalculateHeuristics(avoidCoord)
 			G := g[test].Weight
 			F := G - H
-			if F <= minF {
+			if F >= minF {
 				a.SetNewStart(test)
 				a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
 				a.dontBlockTailOrHead = true
 				a.dontConsiderCost = true
-				if pathFound, _ = a.aStarSearch(); pathFound || minF == math.Inf(1) {
+				if pathFound, pathCost = a.aStarSearch(); pathFound {
+					if pathCost < cost {
+						cost = pathCost
+						minF = F
+						maxDir = dir
+					}
+				} else if minF == math.Inf(-1) {
 					minF = F
 					maxDir = dir
 				}

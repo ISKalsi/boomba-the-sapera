@@ -42,3 +42,7 @@ func (c Cell) IsOk() bool {
 func (c Cell) IsOkAndNotVisited() bool {
 	return !c.IsVisited && c.IsOk()
 }
+
+func (c Cell) IsMaybeOkAndNotVisited() bool {
+	return !c.IsVisited && !c.IsBlocked
+}

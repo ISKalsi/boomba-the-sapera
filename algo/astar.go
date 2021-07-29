@@ -41,6 +41,9 @@ func (a *Algorithm) resetSpecialFlags() {
 	if a.dontConsiderCost {
 		a.dontConsiderCost = false
 	}
+	if a.ignoreUnsureBlocks {
+		a.ignoreUnsureBlocks = false
+	}
 }
 
 func (a *Algorithm) aStarSearch() (bool, float64) {
@@ -76,7 +79,8 @@ func (a *Algorithm) aStarSearch() (bool, float64) {
 					} else {
 						return false, -1
 					}
-				} else if neighborCell.IsOkAndNotVisited() {
+				} else if neighborCell.IsOkAndNotVisited() ||
+					(a.ignoreUnsureBlocks && neighborCell.IsMaybeOkAndNotVisited()) {
 					g := currentCell.G + neighborCell.Weight
 					h := neighborCoord.CalculateHeuristics(a.destination)
 					f := g + h
