@@ -1,0 +1,87 @@
+package collide_in_itself
+
+import . "github.com/ISKalsi/boomba-the-sapera/models"
+
+var EdgeCaseRequest8 = GameRequest{
+	Game: Game{
+		ID:      "f38d2ad9-816a-4683-b9fe-f7716c9c18da",
+		Timeout: 500,
+	},
+	Turn: 76,
+	Board: Board{
+		Height: 11,
+		Width:  11,
+		Food: []Coord{
+			{X: 6, Y: 4},
+			{X: 9, Y: 0},
+		},
+		Snakes: []Battlesnake{
+			{
+				ID:     "3685499c-48cf-4228-8fe0-ae1433968b39",
+				Name:   "Boomba",
+				Health: 100,
+				Body: []Coord{
+					{X: 4, Y: 8},
+					{X: 4, Y: 7},
+					{X: 3, Y: 7},
+					{X: 2, Y: 7},
+					{X: 1, Y: 7},
+					{X: 1, Y: 8},
+					{X: 1, Y: 9},
+					{X: 2, Y: 9},
+					{X: 3, Y: 9},
+					{X: 4, Y: 9},
+					{X: 4, Y: 9},
+				},
+				Head:   Coord{X: 4, Y: 8},
+				Length: 11,
+				Shout:  "",
+			},
+			{
+				ID:     "1355499c-48cf-4228-8fe0-ae1433968b14",
+				Name:   "Evader",
+				Health: 97,
+				Body: []Coord{
+					{X: 2, Y: 6},
+					{X: 3, Y: 6},
+					{X: 3, Y: 5},
+					{X: 3, Y: 4},
+					{X: 2, Y: 4},
+					{X: 2, Y: 3},
+					{X: 3, Y: 3},
+					{X: 4, Y: 3},
+					{X: 5, Y: 3},
+					{X: 6, Y: 3},
+					{X: 7, Y: 3},
+					{X: 8, Y: 3},
+					{X: 9, Y: 3},
+					{X: 9, Y: 2},
+				},
+				Head:   Coord{X: 2, Y: 6},
+				Length: 14,
+				Shout:  "",
+			},
+		},
+	},
+	You: Battlesnake{
+		ID:     "3685499c-48cf-4228-8fe0-ae1433968b39",
+		Name:   "Boomba",
+		Health: 100,
+		Body: []Coord{
+			{X: 4, Y: 8},
+			{X: 4, Y: 7},
+			{X: 3, Y: 7},
+			{X: 2, Y: 7},
+			{X: 1, Y: 7},
+			{X: 1, Y: 8},
+			{X: 1, Y: 9},
+			{X: 2, Y: 9},
+			{X: 3, Y: 9},
+			{X: 4, Y: 9},
+			{X: 4, Y: 9},
+		},
+		Head:   Coord{X: 4, Y: 8},
+		Length: 11,
+		Shout:  "",
+	},
+}

@@ -217,7 +217,11 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	}
 
 	pathFoundIsTooCostly := false
-	if bodyPartsInHazard == 0 || isHeadInHazard {
+	if len(a.board.Snakes) == 1 {
+		if found, direction := a.findLongestPathToTail(&gr.You); found {
+			return direction
+		}
+	} else if bodyPartsInHazard == 0 || isHeadInHazard {
 		bigSnakesAround := false
 		collisionPosibility := false
 
@@ -246,20 +250,20 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			}
 		}
 
-		if !bigSnakesAround && len(a.board.Snakes) != 1 {
-			minH := math.Inf(1)
-			var nearestSnake models.Battlesnake
-			var nearestSnakeIndex int
-			for i, snake := range a.board.Snakes {
-				if snake.ID != gr.You.ID {
-					if h := gr.You.Head.CalculateHeuristics(snake.Head); minH > h {
-						minH = h
-						nearestSnake = snake
-						nearestSnakeIndex = i
-					}
+		minH := math.Inf(1)
+		var nearestSnake models.Battlesnake
+		var nearestSnakeIndex int
+		for i, snake := range a.board.Snakes {
+			if snake.ID != gr.You.ID {
+				if h := gr.You.Head.CalculateHeuristics(snake.Head); minH > h {
+					minH = h
+					nearestSnake = snake
+					nearestSnakeIndex = i
 				}
 			}
+		}
 
+		if !bigSnakesAround {
 			a.SetNewStart(gr.You.Head)
 			a.SetNewDestination(nearestSnake.Head)
 			if pathFound, pathCost = a.aStarSearch(); pathFound {
@@ -319,18 +323,17 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				a.board.Snakes[ourSnakeIndex].Head = originalSnakeBody[0]
 				a.health = originalSnakeHealth
 			}
+		} else {
+			a.SetNewStart(gr.You.Head)
+			a.SetNewDestination(nearestSnake.Body[nearestSnake.Length-1])
+			if pathFound, pathCost = a.aStarSearch(); pathFound {
+				return a.getDirection(a.solvedPath[0])
+			}
 		}
 
 		if !collisionPosibility {
-			a.SetNewStart(gr.You.Head)
-			a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-			a.dontBlockTailOrHead = true
-			if pathFound, pathCost = a.longestPath(); pathFound {
-				tailIndex := gr.You.Length - 1
-				justHadFood := gr.You.Body[tailIndex] == gr.You.Body[tailIndex-1]
-				if len(a.solvedPath) != 1 || !justHadFood {
-					return a.getDirection(a.solvedPath[0])
-				}
+			if found, direction := a.findLongestPathToTail(&gr.You); found {
+				return direction
 			}
 		}
 	}
@@ -383,4 +386,18 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	}
 
 	return parseMoveDirectionToString(directionToIndex[maxDir])
+}
+
+func (a *Algorithm) findLongestPathToTail(you *models.Battlesnake) (bool, string) {
+	a.SetNewStart(you.Head)
+	a.SetNewDestination(you.Body[len(you.Body)-1])
+	a.dontBlockTailOrHead = true
+	if pathFound, _ := a.longestPath(); pathFound {
+		tailIndex := you.Length - 1
+		justHadFood := you.Body[tailIndex] == you.Body[tailIndex-1]
+		if len(a.solvedPath) != 1 || !justHadFood {
+			return true, a.getDirection(a.solvedPath[0])
+		}
+	}
+	return false, ""
 }
