@@ -70,7 +70,7 @@ func (a *Algorithm) aStarSearch() (bool, float64) {
 					neighborCell.ParentCoord = currentCell.Coord
 					g := currentCell.G + neighborCell.Weight
 
-					if g < a.health || a.dontConsiderCost {
+					if g <= a.health || a.dontConsiderCost {
 						a.tracePath(cells)
 						return true, g
 					} else {

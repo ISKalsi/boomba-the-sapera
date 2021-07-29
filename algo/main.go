@@ -175,6 +175,8 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				a.board.Snakes[i].Head = virtualSnake[0]
 				if g[foodCoord].Weight == cell.WeightHazard {
 					a.health = 100 - cell.WeightHazard
+				} else {
+					a.health = 100
 				}
 				break
 			}
@@ -190,15 +192,10 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		}
 
 		if pathFound, pathCost = a.aStarSearch(); pathFound {
-			if originalSnakeHealth-pathCost < 35 {
-				if originalSnakeHealth <= 30 {
-					if trappedScore := a.getTrappedScore(g, gr); trappedScore > 1 {
-						return a.getDirection(shortestPathNextCoord)
-					}
-				}
-			}
-
-			if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
+			trappedScore := a.getTrappedScore(g, gr)
+			if a.health-pathCost < 35 && originalSnakeHealth <= 30 || trappedScore > 1 {
+				return a.getDirection(shortestPathNextCoord)
+			} else if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
 				return a.getDirection(shortestPathNextCoord)
 			}
 		}
