@@ -1,8 +1,10 @@
 package algo
 
 import (
+	"encoding/json"
 	"github.com/ISKalsi/boomba-the-sapera/models"
 	"log"
+	"os"
 )
 
 const (
@@ -10,6 +12,15 @@ const (
 	DOWN
 	LEFT
 	RIGHT
+)
+
+const (
+	CategoryCollideInItself = "collide_in_itself"
+	CategoryCollideInSnake  = "collide_in_snake"
+	CategoryFoodRelated     = "food_related"
+	CategoryHazardRelated   = "hazard_related"
+	CategoryHeadOn          = "head_on"
+	CategoryOutOfBounds     = "out_of_bounds"
 )
 
 var directionToIndex = map[models.Coord]int{
@@ -55,4 +66,17 @@ func reverse(s []models.Coord) {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
+}
+
+func getGameRequestByReasonOfDeath(category string, caseNum string) *models.GameRequest {
+	gr := &models.GameRequest{}
+	file, err := os.ReadFile("../testdata/" + category + "/e" + caseNum + ".json")
+	if err != nil {
+		return nil
+	}
+	err = json.Unmarshal(file, gr)
+	if err != nil {
+		return nil
+	}
+	return gr
 }

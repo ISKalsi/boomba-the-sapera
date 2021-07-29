@@ -34,14 +34,17 @@ func (a *Algorithm) tracePath(g grid.Grid) {
 	reverse(a.solvedPath)
 }
 
-func (a *Algorithm) resetBlockTailFlag() {
+func (a *Algorithm) resetSpecialFlags() {
 	if a.dontBlockTailOrHead {
 		a.dontBlockTailOrHead = false
+	}
+	if a.dontConsiderCost {
+		a.dontConsiderCost = false
 	}
 }
 
 func (a *Algorithm) aStarSearch() (bool, float64) {
-	defer a.resetBlockTailFlag()
+	defer a.resetSpecialFlags()
 
 	if a.start == a.destination {
 		return false, -1
@@ -67,7 +70,7 @@ func (a *Algorithm) aStarSearch() (bool, float64) {
 					neighborCell.ParentCoord = currentCell.Coord
 					g := currentCell.G + neighborCell.Weight
 
-					if g < a.health {
+					if g < a.health || a.dontConsiderCost {
 						a.tracePath(cells)
 						return true, g
 					} else {

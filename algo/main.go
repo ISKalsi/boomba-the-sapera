@@ -20,6 +20,7 @@ type Algorithm struct {
 	head                models.Coord
 	health              float64
 	dontBlockTailOrHead bool
+	dontConsiderCost    bool
 	headCollisions      possibleHeadCollisions
 }
 
@@ -327,7 +328,11 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			a.SetNewStart(gr.You.Head)
 			a.SetNewDestination(nearestSnake.Body[nearestSnake.Length-1])
 			if pathFound, pathCost = a.aStarSearch(); pathFound {
-				return a.getDirection(a.solvedPath[0])
+				tailIndex := nearestSnake.Length - 1
+				justHadFood := nearestSnake.Body[tailIndex] == nearestSnake.Body[tailIndex-1]
+				if len(a.solvedPath) != 1 || !justHadFood {
+					return a.getDirection(a.solvedPath[0])
+				}
 			}
 		}
 
@@ -338,6 +343,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		}
 	}
 
+	g = a.initGrid()
 	var avoidCoord models.Coord
 	notFoundAvoidCoord := true
 
@@ -368,11 +374,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			continue
 		}
 
-		if minF == math.Inf(1) && !g[test].IsBlocked {
-			minF = -g[test].CalculateHeuristics(avoidCoord) + g[test].Weight
-			maxDir = dir
-			continue
-		} else if !g[test].IsOk() {
+		if !g[test].IsOk() {
 			continue
 		}
 
@@ -380,8 +382,46 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		G := g[test].Weight
 		F := G - H
 		if F <= minF {
-			minF = F
-			maxDir = dir
+			a.SetNewStart(test)
+			a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+			a.dontBlockTailOrHead = true
+			if pathFound, _ = a.aStarSearch(); pathFound {
+				tailIndex := gr.You.Length - 1
+				justHadFood := gr.You.Body[tailIndex] == gr.You.Body[tailIndex-1]
+				if len(a.solvedPath) != 1 || !justHadFood {
+					minF = F
+					maxDir = dir
+				}
+			}
+		}
+	}
+
+	if minF == math.Inf(1) {
+		for dir := range directionToIndex {
+			test := gr.You.Head.Sum(dir)
+
+			isOwnBody := gr.You.Body[1] == test
+			if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
+				continue
+			}
+
+			if g[test].IsBlocked {
+				continue
+			}
+
+			H := g[test].CalculateHeuristics(avoidCoord)
+			G := g[test].Weight
+			F := G - H
+			if F <= minF {
+				a.SetNewStart(test)
+				a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+				a.dontBlockTailOrHead = true
+				a.dontConsiderCost = true
+				if pathFound, _ = a.aStarSearch(); pathFound || minF == math.Inf(1) {
+					minF = F
+					maxDir = dir
+				}
+			}
 		}
 	}
 

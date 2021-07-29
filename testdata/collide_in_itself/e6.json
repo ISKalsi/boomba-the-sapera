@@ -1,0 +1,244 @@
+{
+    "board": {
+        "food": [
+            {
+                "x": 0,
+                "y": 0
+            }
+        ],
+        "hazards": [
+            {
+                "x": 0,
+                "y": 10
+            },
+            {
+                "x": 1,
+                "y": 10
+            },
+            {
+                "x": 2,
+                "y": 10
+            },
+            {
+                "x": 3,
+                "y": 10
+            },
+            {
+                "x": 4,
+                "y": 10
+            },
+            {
+                "x": 5,
+                "y": 10
+            },
+            {
+                "x": 6,
+                "y": 10
+            },
+            {
+                "x": 7,
+                "y": 10
+            },
+            {
+                "x": 8,
+                "y": 10
+            },
+            {
+                "x": 9,
+                "y": 10
+            },
+            {
+                "x": 10,
+                "y": 10
+            }
+        ],
+        "height": 11,
+        "snakes": [
+            {
+                "body": [
+                    {
+                        "x": 3,
+                        "y": 1
+                    },
+                    {
+                        "x": 3,
+                        "y": 0
+                    },
+                    {
+                        "x": 4,
+                        "y": 0
+                    }
+                ],
+                "head": {
+                    "x": 3,
+                    "y": 1
+                },
+                "health": 70,
+                "id": "gs_hD3gmCF7vV84vMxjdtrtQB7Y",
+                "latency": "225",
+                "length": 3,
+                "name": "BobFrit Jr",
+                "shout": "",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "x": 1,
+                        "y": 4
+                    }
+                ],
+                "head": {
+                    "x": 1,
+                    "y": 3
+                },
+                "health": 100,
+                "id": "gs_7btttwmRchDf8rBGbFHpGW36",
+                "latency": "79",
+                "length": 5,
+                "name": "Boomba",
+                "shout": "",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "x": 3,
+                        "y": 3
+                    },
+                    {
+                        "x": 3,
+                        "y": 4
+                    }
+                ],
+                "head": {
+                    "x": 1,
+                    "y": 1
+                },
+                "health": 86,
+                "id": "gs_qMDjtPWV6JVk6yQ36GjcyQpQ",
+                "latency": "93",
+                "length": 6,
+                "name": "drebin",
+                "shout": "",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "x": 3,
+                        "y": 5
+                    },
+                    {
+                        "x": 4,
+                        "y": 5
+                    },
+                    {
+                        "x": 5,
+                        "y": 5
+                    },
+                    {
+                        "x": 6,
+                        "y": 5
+                    }
+                ],
+                "head": {
+                    "x": 2,
+                    "y": 4
+                },
+                "health": 90,
+                "id": "gs_Yx8qCYjbqGBpkTkPbj7TWCfb",
+                "latency": "90",
+                "length": 6,
+                "name": "snake30series",
+                "shout": "",
+                "squad": ""
+            }
+        ],
+        "width": 11
+    },
+    "game": {
+        "id": "fae12cd9-f24a-4b8f-b7e0-df08ddec713f",
+        "ruleset": {
+            "name": "royale",
+            "version": "v1.0.0"
+        },
+        "timeout": 500
+    },
+    "turn": 30,
+    "you": {
+        "body": [
+            {
+                "x": 1,
+                "y": 3
+            },
+            {
+                "x": 0,
+                "y": 3
+            },
+            {
+                "x": 0,
+                "y": 4
+            },
+            {
+                "x": 1,
+                "y": 4
+            },
+            {
+                "x": 1,
+                "y": 4
+            }
+        ],
+        "head": {
+            "x": 1,
+            "y": 3
+        },
+        "health": 100,
+        "id": "gs_7btttwmRchDf8rBGbFHpGW36",
+        "latency": "79",
+        "length": 5,
+        "name": "Boomba",
+        "shout": "",
+        "squad": ""
+    }
+}

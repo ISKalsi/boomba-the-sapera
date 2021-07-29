@@ -83,10 +83,10 @@ func TestNextMove_CollideInItselfEdgeCase5(t *testing.T) {
 }
 
 func TestNextMove_CollideInItselfEdgeCase6(t *testing.T) {
-	gr := collide_in_itself.EdgeCaseRequest6
+	gr := getGameRequestByReasonOfDeath(CategoryCollideInItself, "6")
 	a := Init(gr.Board, gr.You)
 
-	nextMove := a.NextMove(&gr)
+	nextMove := a.NextMove(gr)
 	expectedMove := parseMoveDirectionToString(DOWN)
 	assert.Equal(t, expectedMove, nextMove)
 }
@@ -106,6 +106,15 @@ func TestNextMove_CollideInItselfEdgeCase8(t *testing.T) {
 
 	nextMove := a.NextMove(&gr)
 	expectedMove := parseMoveDirectionToString(RIGHT)
+	assert.Equal(t, expectedMove, nextMove)
+}
+
+func TestNextMove_CollideInItselfEdgeCase9(t *testing.T) {
+	gr := getGameRequestByReasonOfDeath(CategoryCollideInItself, "9")
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(gr)
+	expectedMove := parseMoveDirectionToString(UP)
 	assert.Equal(t, expectedMove, nextMove)
 }
 
