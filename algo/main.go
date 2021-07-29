@@ -213,13 +213,14 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 			bodyPartsInHazard += 1
 		}
 	}
+	bodyInHazardToSafeRatio := float32(bodyPartsInHazard) / float32(gr.You.Length)
 
 	pathFoundIsTooCostly := false
 	if len(a.board.Snakes) == 1 {
 		if found, direction := a.findLongestPathToTail(&gr.You); found {
 			return direction
 		}
-	} else if bodyPartsInHazard == 0 || isHeadInHazard {
+	} else if bodyInHazardToSafeRatio < 0.2 || isHeadInHazard {
 		bigSnakesAround := false
 		collisionPosibility := false
 

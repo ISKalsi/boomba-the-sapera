@@ -118,6 +118,24 @@ func TestNextMove_CollideInItselfEdgeCase9(t *testing.T) {
 	assert.Equal(t, expectedMove, nextMove)
 }
 
+func TestNextMove_CollideInItselfEdgeCase11(t *testing.T) {
+	gr := getGameRequestByReasonOfDeath(CategoryCollideInItself, "11")
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(gr)
+	expectedMove := parseMoveDirectionToString(DOWN)
+	assert.Equal(t, expectedMove, nextMove)
+}
+
+func TestNextMove_CollideInItselfEdgeCase12(t *testing.T) {
+	gr := getGameRequestByReasonOfDeath(CategoryCollideInItself, "12")
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(gr)
+	expectedMove := parseMoveDirectionToString(RIGHT)
+	assert.Equal(t, expectedMove, nextMove)
+}
+
 func TestNextMove_CollideInSnakeEdgeCase1(t *testing.T) {
 	gr := collide_in_snake.EdgeCaseRequest1
 	a := Init(gr.Board, gr.You)
@@ -125,6 +143,15 @@ func TestNextMove_CollideInSnakeEdgeCase1(t *testing.T) {
 	nextMove := a.NextMove(&gr)
 	notExpectedMove := parseMoveDirectionToString(LEFT)
 	assert.NotEqual(t, notExpectedMove, nextMove)
+}
+
+func TestNextMove_CollideInSnakeEdgeCase2(t *testing.T) {
+	gr := getGameRequestByReasonOfDeath(CategoryCollideInSnake, "2")
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(gr)
+	expectedMove := parseMoveDirectionToString(DOWN)
+	assert.Equal(t, expectedMove, nextMove)
 }
 
 func TestNoPathToTailAndAvoidHazard(t *testing.T) {
