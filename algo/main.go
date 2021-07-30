@@ -161,7 +161,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		pathFound, pathCost = a.aStarSearch()
 	}
 
-	if pathFound {
+	if pathFound && (gr.You.Length < 15 || float64(gr.You.Health) <= pathCost) {
 		shortestPathNextCoord := a.solvedPath[0]
 		trappedScore := a.getTrappedScore(g, gr)
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
@@ -202,6 +202,19 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	}
 
 	g = a.initGrid()
+	var nearestSnake models.Battlesnake
+	nearestSnakeIndex := -1
+	minH := math.Inf(1)
+	for i, snake := range a.board.Snakes {
+		if snake.ID != gr.You.ID {
+			if h := gr.You.Head.CalculateHeuristics(snake.Head); minH > h {
+				minH = h
+				nearestSnake = snake
+				nearestSnakeIndex = i
+			}
+		}
+	}
+
 	bodyPartsInHazard := 0
 	isHeadInHazard := g[gr.You.Head].Weight == cell.WeightHazard
 	for _, c := range gr.You.Body {
@@ -242,19 +255,6 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 					collisionPosibility = true
 				}
 				bigSnakesAround = true
-			}
-		}
-
-		minH := math.Inf(1)
-		var nearestSnake models.Battlesnake
-		var nearestSnakeIndex int
-		for i, snake := range a.board.Snakes {
-			if snake.ID != gr.You.ID {
-				if h := gr.You.Head.CalculateHeuristics(snake.Head); minH > h {
-					minH = h
-					nearestSnake = snake
-					nearestSnakeIndex = i
-				}
 			}
 		}
 
@@ -335,6 +335,16 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				return direction
 			}
 		}
+	} else if nearestSnakeIndex != -1 {
+		a.SetNewStart(gr.You.Head)
+		a.SetNewDestination(nearestSnake.Body[nearestSnake.Length-1])
+		if pathFound, pathCost = a.longestPath(); pathFound {
+			tailIndex := nearestSnake.Length - 1
+			justHadFood := nearestSnake.Body[tailIndex] == nearestSnake.Body[tailIndex-1]
+			if len(a.solvedPath) != 1 || !justHadFood {
+				return a.getDirection(a.solvedPath[0])
+			}
+		}
 	}
 
 	g = a.initGrid()
@@ -343,7 +353,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	if pathFoundIsTooCostly {
 		for _, snake := range a.board.Snakes {
-			if snake.Length > gr.You.Length {
+			if snake.Length >= gr.You.Length {
 				avoidCoord = snake.Head
 				notFoundAvoidCoord = false
 				break
@@ -353,42 +363,47 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		avoidCoord = foodCoord
 	}
 
-	if notFoundAvoidCoord {
-		avoidCoord = foodCoord
-	}
-
 	minF := math.Inf(1)
 	var maxDir models.Coord
 
-	for dir := range directionToIndex {
-		test := gr.You.Head.Sum(dir)
+	if !notFoundAvoidCoord {
+		for dir := range directionToIndex {
+			test := gr.You.Head.Sum(dir)
 
-		isOwnBody := gr.You.Body[1] == test
-		if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
-			continue
-		}
+			isOwnBody := gr.You.Body[1] == test
+			if isOwnBody || test.IsOutside(a.board.Width, a.board.Height) {
+				continue
+			}
 
-		if !g[test].IsOk() {
-			continue
-		}
+			if !g[test].IsOk() {
+				continue
+			}
 
-		H := g[test].CalculateHeuristics(avoidCoord)
-		G := g[test].Weight
-		F := G - H
-		if F <= minF {
-			a.SetNewStart(test)
-			a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
-			a.dontBlockTailOrHead = true
-			a.ignoreUnsureBlocks = true
-			if pathFound, _ = a.aStarSearch(); pathFound {
-				tailIndex := gr.You.Length - 1
-				justHadFood := gr.You.Body[tailIndex] == gr.You.Body[tailIndex-1]
-				if len(a.solvedPath) != 1 || !justHadFood {
-					minF = F
-					maxDir = dir
+			H := g[test].CalculateHeuristics(avoidCoord)
+			G := g[test].Weight
+			F := G - H
+			if F <= minF {
+				a.SetNewStart(test)
+				a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
+				a.dontBlockTailOrHead = true
+				a.ignoreUnsureBlocks = true
+				if pathFound, _ = a.aStarSearch(); pathFound {
+					tailIndex := gr.You.Length - 1
+					justHadFood := gr.You.Body[tailIndex] == gr.You.Body[tailIndex-1]
+					if len(a.solvedPath) != 1 || !justHadFood {
+						minF = F
+						maxDir = dir
+					}
 				}
 			}
 		}
+	}
+
+	var goTowardsCoord models.Coord
+	if nearestSnakeIndex != -1 {
+		goTowardsCoord = nearestSnake.Body[nearestSnake.Length-1]
+	} else {
+		goTowardsCoord = gr.You.Body[gr.You.Length-1]
 	}
 
 	if minF == math.Inf(1) {
@@ -405,7 +420,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 				continue
 			}
 
-			H := g[test].CalculateHeuristics(avoidCoord)
+			H := g[test].CalculateHeuristics(goTowardsCoord)
 			G := g[test].Weight
 			F := G + H
 			if F <= minF {

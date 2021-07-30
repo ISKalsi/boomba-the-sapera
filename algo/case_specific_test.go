@@ -226,6 +226,15 @@ func TestNextMove_OutOfHealthFromHazardEdgeCase6(t *testing.T) {
 	assert.NotEqual(t, notExpectedNextMove, actualNextMove)
 }
 
+func TestNextMove_OutOfHealthFromHazardEdgeCase7(t *testing.T) {
+	gr := getGameRequestByReasonOfDeath(CategoryHazardRelated, "7")
+	a := Init(gr.Board, gr.You)
+
+	actualNextMove := a.NextMove(gr)
+	notExpectedNextMove := parseMoveDirectionToString(UP)
+	assert.NotEqual(t, notExpectedNextMove, actualNextMove)
+}
+
 func TestNextMove_NearestPlausibleFoodEdgeCase1(t *testing.T) {
 	gr := food_related.EdgeCaseRequest1
 	a := Init(gr.Board, gr.You)
