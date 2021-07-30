@@ -1,0 +1,276 @@
+{
+    "board": {
+        "food": [
+            {
+                "x": 0,
+                "y": 0
+            }
+        ],
+        "hazards": [
+            {
+                "x": 10,
+                "y": 0
+            },
+            {
+                "x": 10,
+                "y": 1
+            },
+            {
+                "x": 10,
+                "y": 2
+            },
+            {
+                "x": 10,
+                "y": 3
+            },
+            {
+                "x": 10,
+                "y": 4
+            },
+            {
+                "x": 10,
+                "y": 5
+            },
+            {
+                "x": 10,
+                "y": 6
+            },
+            {
+                "x": 10,
+                "y": 7
+            },
+            {
+                "x": 10,
+                "y": 8
+            },
+            {
+                "x": 10,
+                "y": 9
+            },
+            {
+                "x": 10,
+                "y": 10
+            }
+        ],
+        "height": 11,
+        "snakes": [
+            {
+                "body": [
+                    {
+                        "x": 5,
+                        "y": 9
+                    },
+                    {
+                        "x": 4,
+                        "y": 9
+                    },
+                    {
+                        "x": 4,
+                        "y": 8
+                    },
+                    {
+                        "x": 4,
+                        "y": 7
+                    },
+                    {
+                        "x": 4,
+                        "y": 6
+                    },
+                    {
+                        "x": 4,
+                        "y": 5
+                    },
+                    {
+                        "x": 5,
+                        "y": 5
+                    }
+                ],
+                "head": {
+                    "x": 5,
+                    "y": 9
+                },
+                "health": 76,
+                "id": "gs_bG8HDhb4P6fXq7gqbfdb9bVH",
+                "latency": "34",
+                "length": 7,
+                "name": "Acid Burn",
+                "shout": "I should move right",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 1,
+                        "y": 9
+                    },
+                    {
+                        "x": 2,
+                        "y": 9
+                    },
+                    {
+                        "x": 3,
+                        "y": 9
+                    },
+                    {
+                        "x": 3,
+                        "y": 8
+                    },
+                    {
+                        "x": 3,
+                        "y": 7
+                    },
+                    {
+                        "x": 3,
+                        "y": 6
+                    }
+                ],
+                "head": {
+                    "x": 1,
+                    "y": 9
+                },
+                "health": 93,
+                "id": "gs_M3KqwkHMcwFyhthFVfbQxHkR",
+                "latency": "256",
+                "length": 6,
+                "name": "Boomslang",
+                "shout": "",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 3,
+                        "y": 3
+                    },
+                    {
+                        "x": 4,
+                        "y": 3
+                    },
+                    {
+                        "x": 5,
+                        "y": 3
+                    },
+                    {
+                        "x": 5,
+                        "y": 2
+                    },
+                    {
+                        "x": 5,
+                        "y": 1
+                    },
+                    {
+                        "x": 5,
+                        "y": 0
+                    },
+                    {
+                        "x": 4,
+                        "y": 0
+                    },
+                    {
+                        "x": 4,
+                        "y": 1
+                    }
+                ],
+                "head": {
+                    "x": 3,
+                    "y": 3
+                },
+                "health": 98,
+                "id": "gs_g9cHgdfbyyqWP6QyPcY39WwY",
+                "latency": "213",
+                "length": 8,
+                "name": "Evader",
+                "shout": "",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "x": 2,
+                        "y": 1
+                    }
+                ],
+                "head": {
+                    "x": 0,
+                    "y": 2
+                },
+                "health": 85,
+                "id": "gs_VBfw3GHM8Wcr3dMB39b8pcVT",
+                "latency": "77",
+                "length": 6,
+                "name": "Boomba",
+                "shout": "",
+                "squad": ""
+            }
+        ],
+        "width": 11
+    },
+    "game": {
+        "id": "e4fc6b1e-f20d-4f74-b933-78c5a3d1025d",
+        "ruleset": {
+            "name": "royale",
+            "version": "v1.0.0"
+        },
+        "timeout": 500
+    },
+    "turn": 38,
+    "you": {
+        "body": [
+            {
+                "x": 0,
+                "y": 2
+            },
+            {
+                "x": 1,
+                "y": 2
+            },
+            {
+                "x": 1,
+                "y": 1
+            },
+            {
+                "x": 1,
+                "y": 0
+            },
+            {
+                "x": 2,
+                "y": 0
+            },
+            {
+                "x": 2,
+                "y": 1
+            }
+        ],
+        "head": {
+            "x": 0,
+            "y": 2
+        },
+        "health": 85,
+        "id": "gs_VBfw3GHM8Wcr3dMB39b8pcVT",
+        "latency": "77",
+        "length": 6,
+        "name": "Boomba",
+        "shout": "",
+        "squad": ""
+    }
+}

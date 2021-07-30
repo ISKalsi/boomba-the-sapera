@@ -145,6 +145,15 @@ func TestNextMove_CollideInItselfEdgeCase12(t *testing.T) {
 	assert.Equal(t, expectedMove, nextMove)
 }
 
+func TestNextMove_CollideInItselfEdgeCase13(t *testing.T) {
+	gr := getGameRequestByReasonOfDeath(CategoryCollideInItself, "13")
+	a := Init(gr.Board, gr.You)
+
+	nextMove := a.NextMove(gr)
+	expectedMove := parseMoveDirectionToString(UP)
+	assert.Equal(t, expectedMove, nextMove)
+}
+
 func TestNextMove_CollideInSnakeEdgeCase1(t *testing.T) {
 	gr := collide_in_snake.EdgeCaseRequest1
 	a := Init(gr.Board, gr.You)

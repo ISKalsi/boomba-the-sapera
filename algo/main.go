@@ -163,6 +163,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 	if pathFound {
 		shortestPathNextCoord := a.solvedPath[0]
+		trappedScore := a.getTrappedScore(g, gr)
 		virtualSnake := g.MoveVirtualSnakeAlongPath(gr.You.Body, a.solvedPath)
 
 		ourSnakeIndex := 0
@@ -187,16 +188,10 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 		a.SetNewDestination(virtualSnake[len(virtualSnake)-1])
 		a.dontBlockTailOrHead = true
 
-		willEatFoodInNextTurn := false
-		if len(a.solvedPath) == 1 {
-			willEatFoodInNextTurn = true
-		}
-
 		if pathFound, pathCost = a.aStarSearch(); pathFound {
-			trappedScore := a.getTrappedScore(g, gr)
 			if a.health-pathCost < 35 && originalSnakeHealth <= 30 || trappedScore > 1 {
 				return a.getDirection(shortestPathNextCoord)
-			} else if len(a.solvedPath) != 1 || !willEatFoodInNextTurn {
+			} else if len(a.solvedPath) != 1 || !foodCoord.IsAtEdge(a.board.Width, a.board.Height) {
 				return a.getDirection(shortestPathNextCoord)
 			}
 		}

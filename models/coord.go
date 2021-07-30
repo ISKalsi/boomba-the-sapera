@@ -24,6 +24,10 @@ func (c Coord) IsOutside(w int, h int) bool {
 	return c.X < 0 || c.Y < 0 || c.X >= w || c.Y >= h
 }
 
+func (c Coord) IsAtEdge(w int, h int) bool {
+	return c.X == 0 || c.X == w-1 || c.Y == 0 || c.Y == h-1
+}
+
 func (c Coord) Sum(c2 Coord) Coord {
 	return Coord{
 		X: c.X + c2.X,
