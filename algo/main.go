@@ -392,7 +392,6 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 	}
 
 	if minF == math.Inf(1) {
-		minF = math.Inf(-1)
 		cost := math.Inf(1)
 		for dir := range directionToIndex {
 			test := gr.You.Head.Sum(dir)
@@ -408,8 +407,8 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 
 			H := g[test].CalculateHeuristics(avoidCoord)
 			G := g[test].Weight
-			F := G - H
-			if F >= minF {
+			F := G + H
+			if F <= minF {
 				a.SetNewStart(test)
 				a.SetNewDestination(gr.You.Body[len(gr.You.Body)-1])
 				a.dontBlockTailOrHead = true
@@ -420,7 +419,7 @@ func (a *Algorithm) NextMove(gr *models.GameRequest) string {
 						minF = F
 						maxDir = dir
 					}
-				} else if minF == math.Inf(-1) {
+				} else if minF == math.Inf(1) {
 					minF = F
 					maxDir = dir
 				}
